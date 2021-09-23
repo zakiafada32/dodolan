@@ -9,8 +9,14 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/zakiafada32/retail/api"
+	userController "github.com/zakiafada32/retail/api/v1/user"
+	userService "github.com/zakiafada32/retail/business/user"
 	"github.com/zakiafada32/retail/config"
+	"github.com/zakiafada32/retail/modules/migration"
+	userRepository "github.com/zakiafada32/retail/modules/user"
 )
 
 func init() {
@@ -19,15 +25,20 @@ func init() {
 
 func main() {
 	// Setup
-	config.ConnectPostgreSQL()
+	db := config.ConnectPostgreSQL()
+	migration.Migrate(db)
+
+	userRepository := userRepository.NewUserRepository(db)
+	userService := userService.NewUserService(userRepository)
+	userController := userController.NewUserController(userService)
+
 	e := echo.New()
-	e.Logger.SetLevel(log.INFO)
-	e.GET("/", func(c echo.Context) error {
-		time.Sleep(5 * time.Second)
-		return c.JSON(http.StatusOK, "OK")
-	})
+	api.RegisterPath(e, userController)
 
 	// Start server
+	e.Logger.SetLevel(log.INFO)
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	go func() {
 		if err := e.Start(":3000"); err != nil && err != http.ErrServerClosed {
 			e.Logger.Fatal("shutting down the server")

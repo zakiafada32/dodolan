@@ -7,4 +7,5 @@ var (
 	ErrHasBeenModified     = errors.New("data has been modified")
 	ErrNotFound            = errors.New("data not found")
 	ErrInvalidSpec         = errors.New("given spec is not valid")
+	ErrFieldConflict       = errors.New("given spec is not valid")
 )
