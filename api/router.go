@@ -16,4 +16,5 @@ func RegisterPath(e *echo.Echo, userController *user.UserController) {
 
 	userV1 := e.Group("api/v1/users")
 	userV1.POST("", userController.CreateNewUser)
+	userV1.POST("/login", userController.Login)
 }

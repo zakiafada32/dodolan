@@ -1,0 +1,30 @@
+package utils
+
+import (
+	"os"
+	"time"
+
+	"github.com/golang-jwt/jwt"
+)
+
+type JwtCustomClaimsUser struct {
+	ID    string
+	Admin bool
+	jwt.StandardClaims
+}
+
+func GenerateToken(id string, admin bool) (string, error) {
+	var jwtKey = os.Getenv("JWT_KEY")
+	claims := JwtCustomClaimsUser{
+		ID:    id,
+		Admin: admin,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Millisecond * 60000).Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(jwtKey))
+
+	return tokenString, err
+}

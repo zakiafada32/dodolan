@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -19,7 +20,7 @@ type User struct {
 	Email     string
 	Password  string
 	Address   string
-	IsAdmin   bool
+	IsAdmin   *bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -31,7 +32,7 @@ func NewUser(user user.User) *User {
 		user.Email,
 		user.Password,
 		user.Address,
-		user.IsAdmin,
+		&user.IsAdmin,
 		user.CreatedAt,
 		user.UpdatedAt,
 	}
@@ -43,18 +44,27 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) CreateNewUser(user user.User) error {
-	if err := repo.db.Where("email = ?", user.Email).First(&User{}).Error; err != nil {
-		log.Println("wokwokwokw")
-		return err
+func (u *UserRepository) CreateNewUser(user user.User) error {
+	if err := u.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
+		return errors.New("email already exist")
 	}
 
 	userData := NewUser(user)
+	log.Println(userData)
 	userData.ID = utils.GenerateID()
 
-	if err := repo.db.Create(userData).Error; err != nil {
+	if err := u.db.Create(userData).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (repo *UserRepository) FindByEmail(email string) (user.User, error) {
+	var user user.User
+	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
+		return user, err
+	}
+
+	return user, nil
 }

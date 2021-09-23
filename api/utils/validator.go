@@ -1,7 +1,18 @@
 package utils
 
 import (
+	"net/http"
+
+	"github.com/go-playground/locales/en"
+	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	en_translations "github.com/go-playground/validator/v10/translations/en"
+	"github.com/labstack/echo/v4"
+)
+
+// use a single instance , it caches struct info
+var (
+	uni *ut.UniversalTranslator
 )
 
 type CustomValidator struct {
@@ -9,11 +20,41 @@ type CustomValidator struct {
 }
 
 func (cv *CustomValidator) Validate(i interface{}) error {
-	// if err := cv.Validator.Struct(i); err != nil {
-	// log.Println(err)
-	// Optionally, you could return the error to give each route more control over the status code
-	// return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	// }
-	// return nil
-	return cv.Validator.Struct(i)
+	if uni == nil {
+		en := en.New()
+		uni = ut.New(en, en)
+	}
+	trans, _ := uni.GetTranslator("en")
+	en_translations.RegisterDefaultTranslations(cv.Validator, trans)
+
+	err := cv.Validator.Struct(i)
+	if err != nil {
+		message := translateIndividual(trans, err)
+		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{
+			"Code":    http.StatusBadRequest,
+			"Message": message,
+			"Data":    map[string]interface{}{},
+		})
+	}
+
+	return nil
+}
+
+// func (cv *CustomValidator) Validate(i interface{}) error {
+// 	if err := cv.Validator.Struct(i); err != nil {
+// 		// Optionally, you could return the error to give each route more control over the status code
+// 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+// 	}
+// 	return nil
+// }
+
+func translateIndividual(trans ut.Translator, err error) string {
+
+	errs := err.(validator.ValidationErrors)
+
+	for _, e := range errs {
+		return e.Translate(trans)
+	}
+
+	return "validation error"
 }
