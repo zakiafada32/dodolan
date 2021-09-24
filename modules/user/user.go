@@ -2,11 +2,9 @@ package user
 
 import (
 	"errors"
-	"log"
 	"time"
 
 	"github.com/zakiafada32/retail/business/user"
-	"github.com/zakiafada32/retail/modules/utils"
 	"gorm.io/gorm"
 )
 
@@ -27,14 +25,14 @@ type User struct {
 
 func NewUser(user user.User) *User {
 	return &User{
-		user.ID,
-		user.Name,
-		user.Email,
-		user.Password,
-		user.Address,
-		&user.IsAdmin,
-		user.CreatedAt,
-		user.UpdatedAt,
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		Address:   user.Address,
+		IsAdmin:   &user.IsAdmin,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 }
 
@@ -44,25 +42,23 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (u *UserRepository) CreateNewUser(user user.User) error {
-	if err := u.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
+func (ur *UserRepository) CreateNewUser(user user.User) error {
+	if err := ur.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
 		return errors.New("email already exist")
 	}
 
 	userData := NewUser(user)
-	log.Println(userData)
-	userData.ID = utils.GenerateID()
 
-	if err := u.db.Create(userData).Error; err != nil {
+	if err := ur.db.Create(userData).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repo *UserRepository) FindByEmail(email string) (user.User, error) {
+func (ur *UserRepository) FindByEmail(email string) (user.User, error) {
 	var user user.User
-	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := ur.db.Where("email = ?", email).First(&user).Error; err != nil {
 		return user, err
 	}
 

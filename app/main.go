@@ -12,10 +12,16 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/zakiafada32/retail/api"
+	categoryController "github.com/zakiafada32/retail/api/v1/category"
+	productController "github.com/zakiafada32/retail/api/v1/product"
 	userController "github.com/zakiafada32/retail/api/v1/user"
+	categoryService "github.com/zakiafada32/retail/business/category"
+	productService "github.com/zakiafada32/retail/business/product"
 	userService "github.com/zakiafada32/retail/business/user"
 	"github.com/zakiafada32/retail/config"
-	"github.com/zakiafada32/retail/modules/migration"
+	"github.com/zakiafada32/retail/modules"
+	categoryRepository "github.com/zakiafada32/retail/modules/category"
+	productRepository "github.com/zakiafada32/retail/modules/product"
 	userRepository "github.com/zakiafada32/retail/modules/user"
 )
 
@@ -26,14 +32,22 @@ func init() {
 func main() {
 	// Setup
 	db := config.ConnectPostgreSQL()
-	migration.Migrate(db)
+	modules.Migrate(db)
 
 	userRepository := userRepository.NewUserRepository(db)
 	userService := userService.NewUserService(userRepository)
 	userController := userController.NewUserController(userService)
 
+	productRepository := productRepository.NewProductRepository(db)
+	productService := productService.NewProductService(productRepository)
+	productController := productController.NewProductController(productService)
+
+	categoryRepository := categoryRepository.NewCategoryRepository(db)
+	categoryService := categoryService.NewCategoryService(categoryRepository)
+	categoryController := categoryController.NewCategoryController(categoryService)
+
 	e := echo.New()
-	api.RegisterPath(e, userController)
+	api.Bootstrap(e, userController, categoryController, productController)
 
 	// Start server
 	e.Logger.SetLevel(log.INFO)

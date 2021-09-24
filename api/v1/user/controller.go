@@ -17,9 +17,9 @@ func NewUserController(service user.Service) *UserController {
 	}
 }
 
-func (u *UserController) CreateNewUser(c echo.Context) error {
+func (uc *UserController) CreateNewUser(c echo.Context) error {
 
-	var body CreateNewUserRequestBody
+	var body createNewUserRequestBody
 	if err := c.Bind(&body); err != nil {
 		return err
 	}
@@ -27,19 +27,19 @@ func (u *UserController) CreateNewUser(c echo.Context) error {
 		return err
 	}
 
-	err := u.service.CreateNewUser(body.convertToUserBusiness())
+	err := uc.service.CreateNewUser(body.convertToUserBusiness())
 	if err != nil {
 		return err
 	}
 
 	return c.JSON(http.StatusCreated, echo.Map{
-		"code":    http.StatusCreated,
-		"message": "new user created",
+		"code":    "new_user_created",
+		"message": "new user created has been created successfully",
 		"data":    map[string]interface{}{},
 	})
 }
 
-func (u *UserController) Login(c echo.Context) error {
+func (uc *UserController) Login(c echo.Context) error {
 	var body LoginRequestBody
 
 	if err := c.Bind(&body); err != nil {
@@ -49,7 +49,7 @@ func (u *UserController) Login(c echo.Context) error {
 		return err
 	}
 
-	token, err := u.service.Login(body.Email, body.Password)
+	token, err := uc.service.Login(body.Email, body.Password)
 	if err != nil {
 		return c.NoContent(http.StatusUnauthorized)
 	}

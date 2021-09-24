@@ -1,6 +1,8 @@
 package user
 
-import "github.com/zakiafada32/retail/business/utils"
+import (
+	"github.com/zakiafada32/retail/business/utils"
+)
 
 type service struct {
 	repository Repository
@@ -13,6 +15,11 @@ func NewUserService(repository Repository) Service {
 }
 
 func (s *service) CreateNewUser(user User) error {
+	err := utils.GetValidator().Struct(user)
+	if err != nil {
+		return err
+	}
+	user.ID = utils.GenerateID()
 	hashingPassword, err := utils.Hashing(user.Password)
 	if err != nil {
 		return err
