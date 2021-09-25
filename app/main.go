@@ -13,14 +13,20 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/zakiafada32/retail/api"
 	categoryController "github.com/zakiafada32/retail/api/v1/category"
+	courierController "github.com/zakiafada32/retail/api/v1/courier"
+	paymentController "github.com/zakiafada32/retail/api/v1/payment"
 	productController "github.com/zakiafada32/retail/api/v1/product"
 	userController "github.com/zakiafada32/retail/api/v1/user"
 	categoryService "github.com/zakiafada32/retail/business/category"
+	courierService "github.com/zakiafada32/retail/business/courier"
+	paymentService "github.com/zakiafada32/retail/business/payment"
 	productService "github.com/zakiafada32/retail/business/product"
 	userService "github.com/zakiafada32/retail/business/user"
 	"github.com/zakiafada32/retail/config"
 	"github.com/zakiafada32/retail/modules"
 	categoryRepository "github.com/zakiafada32/retail/modules/category"
+	courierRepository "github.com/zakiafada32/retail/modules/courier"
+	paymentRepository "github.com/zakiafada32/retail/modules/payment"
 	productRepository "github.com/zakiafada32/retail/modules/product"
 	userRepository "github.com/zakiafada32/retail/modules/user"
 )
@@ -46,8 +52,16 @@ func main() {
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	categoryController := categoryController.NewCategoryController(categoryService)
 
+	courierRepository := courierRepository.NewCourierRepository(db)
+	courierService := courierService.NewCourierService(courierRepository)
+	courierController := courierController.NewCourierController(courierService)
+
+	paymentRepository := paymentRepository.NewPaymentRepository(db)
+	paymentService := paymentService.NewPaymentService(paymentRepository)
+	paymentController := paymentController.NewPaymentController(paymentService)
+
 	e := echo.New()
-	api.Bootstrap(e, userController, categoryController, productController)
+	api.Bootstrap(e, userController, categoryController, productController, courierController, paymentController)
 
 	// Start server
 	e.Logger.SetLevel(log.INFO)

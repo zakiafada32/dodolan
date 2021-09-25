@@ -3,9 +3,7 @@ package business
 import "errors"
 
 var (
-	ErrInternalServerError = errors.New("internal server error")
-	ErrHasBeenModified     = errors.New("data has been modified")
-	ErrNotFound            = errors.New("data not found")
-	ErrInvalidSpec         = errors.New("given spec is not valid")
-	ErrFieldConflict       = errors.New("given spec is not valid")
+	ErrInternalServerError = errors.New("internal_server_error")
+	ErrNotFound            = errors.New("data_not_found")
+	ErrBadRequest          = errors.New("bad_request")
 )

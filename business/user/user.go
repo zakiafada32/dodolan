@@ -14,3 +14,9 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type NewUserResponse struct {
+	Name    string
+	Email   string
+	Address string
+}

@@ -8,16 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type CategoryRepository struct {
-	db *gorm.DB
-}
-
 type Category struct {
 	ID          uint32 `gorm:"primaryKey"`
 	Name        string
 	Description string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+}
+
+type CategoryRepository struct {
+	db *gorm.DB
 }
 
 func NewCategory(category category.Category) *Category {

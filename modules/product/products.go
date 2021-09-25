@@ -53,6 +53,10 @@ func (pr *ProductRepository) CreateNewProduct(product product.Product) error {
 		return errors.New("the product name already exist")
 	}
 
+	if len(categories) != len(product.CategoryId) {
+		return errors.New("category not found")
+	}
+
 	productData := NewProduct(product)
 	productData.Categories = categories
 
