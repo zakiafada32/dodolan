@@ -6,16 +6,16 @@ type service struct {
 	repository Repository
 }
 
-func NewPaymentService(repository Repository) Service {
+func NewPaymentService(repo Repository) Service {
 	return &service{
-		repository: repository,
+		repository: repo,
 	}
 }
 
-func (s *service) CreateNewPaymentProvider(paymentProvider PaymentProvider) error {
-	err := utils.GetValidator().Struct(paymentProvider)
+func (s *service) CreateNewPaymentProvider(provider PaymentProvider) error {
+	err := utils.GetValidator().Struct(provider)
 	if err != nil {
 		return err
 	}
-	return s.repository.CreateNewPaymentProvider(paymentProvider)
+	return s.repository.CreateNewPaymentProvider(provider)
 }

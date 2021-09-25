@@ -8,10 +8,14 @@ type service struct {
 	repository Repository
 }
 
-func NewUserService(repository Repository) Service {
+func NewUserService(repo Repository) Service {
 	return &service{
-		repository: repository,
+		repository: repo,
 	}
+}
+
+func (s *service) GetCurrentUser(userId string) (User, error) {
+	return s.repository.FindById(userId)
 }
 
 func (s *service) CreateNewUser(user User) error {
@@ -42,4 +46,8 @@ func (s *service) Login(email string, password string) (string, error) {
 
 	token, err := utils.GenerateToken(user.ID, user.IsAdmin)
 	return token, err
+}
+
+func (s *service) UpdateUser(userId string, updateData UpdateUser) (User, error) {
+	return s.repository.UpdateUser(userId, updateData)
 }

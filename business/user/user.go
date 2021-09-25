@@ -15,8 +15,7 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-type NewUserResponse struct {
+type UpdateUser struct {
 	Name    string
-	Email   string
 	Address string
 }

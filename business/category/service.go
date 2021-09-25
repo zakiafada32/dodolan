@@ -6,9 +6,9 @@ type service struct {
 	repository Repository
 }
 
-func NewCategoryService(repository Repository) Service {
+func NewCategoryService(repo Repository) Service {
 	return &service{
-		repository: repository,
+		repository: repo,
 	}
 }
 

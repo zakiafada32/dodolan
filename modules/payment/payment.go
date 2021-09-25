@@ -26,26 +26,26 @@ func NewPaymentRepository(db *gorm.DB) *PaymentRepository {
 	}
 }
 
-func NewPaymentProvider(paymentProvider payment.PaymentProvider) *PaymentProvider {
-	return &PaymentProvider{
-		ID:          paymentProvider.ID,
-		Name:        paymentProvider.Name,
-		Description: paymentProvider.Description,
-		CreatedAt:   paymentProvider.CreatedAt,
-		UpdatedAt:   paymentProvider.UpdatedAt,
-	}
-}
-
-func (pr *PaymentRepository) CreateNewPaymentProvider(paymentProvider payment.PaymentProvider) error {
-	if err := pr.db.Where("name = ?", paymentProvider.Name).First(&PaymentProvider{}).Error; err == nil {
+func (pr *PaymentRepository) CreateNewPaymentProvider(provider payment.PaymentProvider) error {
+	if err := pr.db.Where("name = ?", provider.Name).First(&PaymentProvider{}).Error; err == nil {
 		return errors.New("the payment provider name already exist")
 	}
 
-	paymentProviderData := NewPaymentProvider(paymentProvider)
+	providerData := convertToPaymentProviderModel(provider)
 
-	if err := pr.db.Create(paymentProviderData).Error; err != nil {
+	if err := pr.db.Create(&providerData).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func convertToPaymentProviderModel(provider payment.PaymentProvider) PaymentProvider {
+	return PaymentProvider{
+		ID:          provider.ID,
+		Name:        provider.Name,
+		Description: provider.Description,
+		CreatedAt:   provider.CreatedAt,
+		UpdatedAt:   provider.UpdatedAt,
+	}
 }

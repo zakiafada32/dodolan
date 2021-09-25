@@ -6,9 +6,9 @@ type service struct {
 	repository Repository
 }
 
-func NewProductService(repository Repository) Service {
+func NewProductService(repo Repository) Service {
 	return &service{
-		repository: repository,
+		repository: repo,
 	}
 }
 

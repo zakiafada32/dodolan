@@ -26,26 +26,26 @@ func NewCourierRepository(db *gorm.DB) *CourierRepository {
 	}
 }
 
-func NewCourierProvider(courierProvider courier.CourierProvider) *CourierProvider {
-	return &CourierProvider{
-		ID:          courierProvider.ID,
-		Name:        courierProvider.Name,
-		Description: courierProvider.Description,
-		CreatedAt:   courierProvider.CreatedAt,
-		UpdatedAt:   courierProvider.UpdatedAt,
-	}
-}
-
-func (pr *CourierRepository) CreateNewCourierProvider(courierProvider courier.CourierProvider) error {
-	if err := pr.db.Where("name = ?", courierProvider.Name).First(&CourierProvider{}).Error; err == nil {
+func (pr *CourierRepository) CreateNewCourierProvider(provider courier.CourierProvider) error {
+	if err := pr.db.Where("name = ?", provider.Name).First(&CourierProvider{}).Error; err == nil {
 		return errors.New("the courier provider name already exist")
 	}
 
-	courierProviderData := NewCourierProvider(courierProvider)
+	providerData := convertToCourierProviderModel(provider)
 
-	if err := pr.db.Create(courierProviderData).Error; err != nil {
+	if err := pr.db.Create(&providerData).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func convertToCourierProviderModel(provider courier.CourierProvider) CourierProvider {
+	return CourierProvider{
+		ID:          provider.ID,
+		Name:        provider.Name,
+		Description: provider.Description,
+		CreatedAt:   provider.CreatedAt,
+		UpdatedAt:   provider.UpdatedAt,
+	}
 }

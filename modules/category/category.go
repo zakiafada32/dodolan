@@ -20,16 +20,6 @@ type CategoryRepository struct {
 	db *gorm.DB
 }
 
-func NewCategory(category category.Category) *Category {
-	return &Category{
-		ID:          category.ID,
-		Name:        category.Name,
-		Description: category.Description,
-		CreatedAt:   category.CreatedAt,
-		UpdatedAt:   category.UpdatedAt,
-	}
-}
-
 func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
 	return &CategoryRepository{
 		db: db,
@@ -41,10 +31,20 @@ func (cr *CategoryRepository) CreateNewCategory(category category.Category) erro
 		return errors.New("the category name already exist")
 	}
 
-	categoryData := NewCategory(category)
-	if err := cr.db.Create(categoryData).Error; err != nil {
+	categoryData := convertToModulesCategory(category)
+	if err := cr.db.Create(&categoryData).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func convertToModulesCategory(category category.Category) Category {
+	return Category{
+		ID:          category.ID,
+		Name:        category.Name,
+		Description: category.Description,
+		CreatedAt:   category.CreatedAt,
+		UpdatedAt:   category.UpdatedAt,
+	}
 }

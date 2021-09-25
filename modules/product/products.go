@@ -24,18 +24,6 @@ type Product struct {
 	UpdatedAt   time.Time
 }
 
-func NewProduct(product product.Product) *Product {
-	return &Product{
-		ID:          product.ID,
-		Name:        product.Name,
-		Description: product.Description,
-		Stock:       product.Stock,
-		Price:       product.Price,
-		CreatedAt:   product.CreatedAt,
-		UpdatedAt:   product.UpdatedAt,
-	}
-}
-
 func NewProductRepository(db *gorm.DB) *ProductRepository {
 	return &ProductRepository{
 		db: db,
@@ -57,12 +45,24 @@ func (pr *ProductRepository) CreateNewProduct(product product.Product) error {
 		return errors.New("category not found")
 	}
 
-	productData := NewProduct(product)
+	productData := convertToProductModel(product)
 	productData.Categories = categories
 
-	if err := pr.db.Create(productData).Error; err != nil {
+	if err := pr.db.Create(&productData).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func convertToProductModel(product product.Product) Product {
+	return Product{
+		ID:          product.ID,
+		Name:        product.Name,
+		Description: product.Description,
+		Stock:       product.Stock,
+		Price:       product.Price,
+		CreatedAt:   product.CreatedAt,
+		UpdatedAt:   product.UpdatedAt,
+	}
 }

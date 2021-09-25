@@ -17,12 +17,12 @@ import (
 	paymentController "github.com/zakiafada32/retail/api/v1/payment"
 	productController "github.com/zakiafada32/retail/api/v1/product"
 	userController "github.com/zakiafada32/retail/api/v1/user"
+	"github.com/zakiafada32/retail/app/config"
 	categoryService "github.com/zakiafada32/retail/business/category"
 	courierService "github.com/zakiafada32/retail/business/courier"
 	paymentService "github.com/zakiafada32/retail/business/payment"
 	productService "github.com/zakiafada32/retail/business/product"
 	userService "github.com/zakiafada32/retail/business/user"
-	"github.com/zakiafada32/retail/config"
 	"github.com/zakiafada32/retail/modules"
 	categoryRepository "github.com/zakiafada32/retail/modules/category"
 	courierRepository "github.com/zakiafada32/retail/modules/courier"
@@ -61,7 +61,16 @@ func main() {
 	paymentController := paymentController.NewPaymentController(paymentService)
 
 	e := echo.New()
-	api.Bootstrap(e, userController, categoryController, productController, courierController, paymentController)
+
+	controller := api.Controller{
+		User:     userController,
+		Category: categoryController,
+		Product:  productController,
+		Payment:  paymentController,
+		Courier:  courierController,
+	}
+
+	api.Bootstrap(e, &controller)
 
 	// Start server
 	e.Logger.SetLevel(log.INFO)

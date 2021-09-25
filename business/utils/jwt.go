@@ -19,7 +19,7 @@ func GenerateToken(id string, admin bool) (string, error) {
 		ID:    id,
 		Admin: admin,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Millisecond * 60000).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
 	}
 
