@@ -13,3 +13,8 @@ func (req *createNewPaymentProviderRequestBody) convertToPaymentProviderBusiness
 		Description: req.Description,
 	}
 }
+
+type updatePaymentProviderRequestBody struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}

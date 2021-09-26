@@ -26,22 +26,69 @@ func NewCourierRepository(db *gorm.DB) *CourierRepository {
 	}
 }
 
-func (repo *CourierRepository) CreateNewCourierProvider(provider courierBusiness.CourierProvider) error {
-	if err := repo.db.Where("name = ?", provider.Name).First(&CourierProvider{}).Error; err == nil {
+func (repo *CourierRepository) FindAll() ([]courierBusiness.CourierProvider, error) {
+	var couriers []CourierProvider
+	err := repo.db.Find(&couriers).Error
+	if err != nil {
+		return []courierBusiness.CourierProvider{}, err
+	}
+
+	couriersData := make([]courierBusiness.CourierProvider, len(couriers))
+	for i, courier := range couriers {
+		couriersData[i] = convertToCourierProviderBusiness(courier)
+	}
+	return couriersData, nil
+}
+
+func (repo *CourierRepository) CreateNew(provider courierBusiness.CourierProvider) error {
+	err := repo.db.Where("name = ?", provider.Name).First(&CourierProvider{}).Error
+	if err == nil {
 		return errors.New("the courier provider name already exist")
 	}
 
 	providerData := convertToCourierProviderModel(provider)
 
-	if err := repo.db.Create(&providerData).Error; err != nil {
+	err = repo.db.Create(&providerData).Error
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
 
+func (repo *CourierRepository) Update(id uint32, name, description string) (courierBusiness.CourierProvider, error) {
+	var courier CourierProvider
+	err := repo.db.Where("name = ?", name).First(&courier).Error
+	if err == nil {
+		return courierBusiness.CourierProvider{}, errors.New("the courier name already exist")
+	}
+
+	err = repo.db.Where("id = ?", id).First(&courier).Error
+	if err != nil {
+		return courierBusiness.CourierProvider{}, err
+	}
+
+	err = repo.db.Model(&courier).Updates(&CourierProvider{Name: name, Description: description}).Error
+	if err != nil {
+		return courierBusiness.CourierProvider{}, err
+	}
+
+	courierData := convertToCourierProviderBusiness(courier)
+	return courierData, nil
+}
+
 func convertToCourierProviderModel(provider courierBusiness.CourierProvider) CourierProvider {
 	return CourierProvider{
+		ID:          provider.ID,
+		Name:        provider.Name,
+		Description: provider.Description,
+		CreatedAt:   provider.CreatedAt,
+		UpdatedAt:   provider.UpdatedAt,
+	}
+}
+
+func convertToCourierProviderBusiness(provider CourierProvider) courierBusiness.CourierProvider {
+	return courierBusiness.CourierProvider{
 		ID:          provider.ID,
 		Name:        provider.Name,
 		Description: provider.Description,

@@ -26,22 +26,25 @@ func NewCategoryRepository(db *gorm.DB) *CategoryRepository {
 	}
 }
 
-func (repo *CategoryRepository) CreateNewCategory(category categoryBusiness.Category) error {
-	if err := repo.db.Where("name = ?", category.Name).First(&Category{}).Error; err == nil {
+func (repo *CategoryRepository) CreateNew(category categoryBusiness.Category) error {
+	err := repo.db.Where("name = ?", category.Name).First(&Category{}).Error
+	if err == nil {
 		return errors.New("the category name already exist")
 	}
 
 	categoryData := convertToCategoryModel(category)
-	if err := repo.db.Create(&categoryData).Error; err != nil {
+	err = repo.db.Create(&categoryData).Error
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (repo *CategoryRepository) FindAllCategory() ([]categoryBusiness.Category, error) {
+func (repo *CategoryRepository) FindAll() ([]categoryBusiness.Category, error) {
 	var categories []Category
-	if err := repo.db.Find(&categories).Error; err != nil {
+	err := repo.db.Find(&categories).Error
+	if err != nil {
 		return []categoryBusiness.Category{}, err
 	}
 
@@ -54,9 +57,10 @@ func (repo *CategoryRepository) FindAllCategory() ([]categoryBusiness.Category, 
 
 }
 
-func (repo *CategoryRepository) FindCategoryById(id uint32) (categoryBusiness.Category, error) {
+func (repo *CategoryRepository) FindById(id uint32) (categoryBusiness.Category, error) {
 	var category Category
-	if err := repo.db.Where("id = ?", id).First(&category).Error; err != nil {
+	err := repo.db.Where("id = ?", id).First(&category).Error
+	if err != nil {
 		return categoryBusiness.Category{}, err
 	}
 
@@ -66,17 +70,20 @@ func (repo *CategoryRepository) FindCategoryById(id uint32) (categoryBusiness.Ca
 
 }
 
-func (repo *CategoryRepository) UpdateCategory(categoryId uint32, name string, description string) (categoryBusiness.Category, error) {
+func (repo *CategoryRepository) Update(id uint32, name string, description string) (categoryBusiness.Category, error) {
 	var category Category
-	if err := repo.db.Where("name = ?", name).First(&category).Error; err == nil {
+	err := repo.db.Where("name = ?", name).First(&category).Error
+	if err == nil {
 		return categoryBusiness.Category{}, errors.New("the category name already exist")
 	}
 
-	if err := repo.db.Where("id = ?", categoryId).First(&category).Error; err != nil {
+	err = repo.db.Where("id = ?", id).First(&category).Error
+	if err != nil {
 		return categoryBusiness.Category{}, err
 	}
 
-	if err := repo.db.Model(&category).Updates(&Category{Name: name, Description: description}).Error; err != nil {
+	err = repo.db.Model(&category).Updates(&Category{Name: name, Description: description}).Error
+	if err != nil {
 		return categoryBusiness.Category{}, err
 	}
 

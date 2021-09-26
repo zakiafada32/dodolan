@@ -15,3 +15,8 @@ func (req *createNewCourierProviderRequestBody) convertToCourierProviderBusiness
 		Description: req.Description,
 	}
 }
+
+type updateCourierProviderRequestBody struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}

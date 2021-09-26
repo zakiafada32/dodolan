@@ -1,6 +1,11 @@
 package product
 
-import "github.com/zakiafada32/retail/business/utils"
+import (
+	"errors"
+
+	"github.com/zakiafada32/retail/business"
+	"github.com/zakiafada32/retail/business/utils"
+)
 
 type service struct {
 	repository Repository
@@ -17,5 +22,9 @@ func (s *service) CreateNewProduct(product Product) error {
 	if err != nil {
 		return err
 	}
-	return s.repository.CreateNewProduct(product)
+	err = s.repository.CreateNewProduct(product)
+	if err != nil {
+		return errors.New(business.BadRequest)
+	}
+	return nil
 }

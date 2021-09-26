@@ -8,6 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"github.com/labstack/echo/v4"
+	"github.com/zakiafada32/retail/business"
 )
 
 // use a single instance , it caches struct info
@@ -31,9 +32,9 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 	if err != nil {
 		message := translateIndividual(trans, err)
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{
-			"Code":    http.StatusBadRequest,
-			"Message": message,
-			"Data":    map[string]interface{}{},
+			"status_code": business.BadRequest,
+			"message":     message,
+			"data":        map[string]interface{}{},
 		})
 	}
 

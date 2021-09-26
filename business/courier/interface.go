@@ -1,9 +1,13 @@
 package courier
 
 type Service interface {
-	CreateNewCourierProvider(courierProvider CourierProvider) error
+	FindAll() ([]CourierProvider, error)
+	CreateNew(courierProvider CourierProvider) error
+	Update(id uint32, name string, description string) (CourierProvider, error)
 }
 
 type Repository interface {
-	CreateNewCourierProvider(courierProvider CourierProvider) error
+	FindAll() ([]CourierProvider, error)
+	CreateNew(courierProvider CourierProvider) error
+	Update(id uint32, name string, description string) (CourierProvider, error)
 }

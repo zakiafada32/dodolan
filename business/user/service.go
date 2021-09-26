@@ -17,8 +17,8 @@ func NewUserService(repo Repository) Service {
 	}
 }
 
-func (s *service) GetCurrentUser(userId string) (User, error) {
-	user, err := s.repository.FindById(userId)
+func (s *service) GetCurrent(id string) (User, error) {
+	user, err := s.repository.FindById(id)
 	if err != nil {
 		return User{}, errors.New(business.InternalServerError)
 	}
@@ -26,7 +26,7 @@ func (s *service) GetCurrentUser(userId string) (User, error) {
 	return user, nil
 }
 
-func (s *service) CreateNewUser(user User) error {
+func (s *service) CreateNew(user User) error {
 	err := utils.GetValidator().Struct(user)
 	if err != nil {
 		return errors.New(business.BadRequest)
@@ -38,7 +38,7 @@ func (s *service) CreateNewUser(user User) error {
 	}
 
 	user.Password = hashingPassword
-	return s.repository.CreateNewUser(user)
+	return s.repository.CreateNew(user)
 }
 
 func (s *service) Login(email string, password string) (string, error) {
@@ -59,8 +59,8 @@ func (s *service) Login(email string, password string) (string, error) {
 	return token, nil
 }
 
-func (s *service) UpdateUser(userId, name, address string) (User, error) {
-	user, err := s.repository.UpdateUser(userId, name, address)
+func (s *service) Update(id, name, address string) (User, error) {
+	user, err := s.repository.Update(id, name, address)
 	if err != nil {
 		return User{}, errors.New(business.InternalServerError)
 	}

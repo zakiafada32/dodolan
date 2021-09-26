@@ -29,14 +29,16 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) CreateNewUser(user userBusiness.User) error {
-	if err := repo.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
+func (repo *UserRepository) CreateNew(user userBusiness.User) error {
+	err := repo.db.Where("email = ?", user.Email).First(&User{}).Error
+	if err == nil {
 		return errors.New("email already exist")
 	}
 
 	userData := convertToUserModel(user)
 
-	if err := repo.db.Create(&userData).Error; err != nil {
+	err = repo.db.Create(&userData).Error
+	if err != nil {
 		return err
 	}
 
@@ -45,7 +47,8 @@ func (repo *UserRepository) CreateNewUser(user userBusiness.User) error {
 
 func (repo *UserRepository) FindById(userId string) (userBusiness.User, error) {
 	var userData User
-	if err := repo.db.Where("id = ?", userId).First(&userData).Error; err != nil {
+	err := repo.db.Where("id = ?", userId).First(&userData).Error
+	if err != nil {
 		return userBusiness.User{}, err
 	}
 
@@ -55,7 +58,8 @@ func (repo *UserRepository) FindById(userId string) (userBusiness.User, error) {
 
 func (repo *UserRepository) FindByEmail(email string) (userBusiness.User, error) {
 	var user User
-	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
+	err := repo.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
 		return userBusiness.User{}, err
 	}
 
@@ -63,13 +67,15 @@ func (repo *UserRepository) FindByEmail(email string) (userBusiness.User, error)
 	return userBusiness, nil
 }
 
-func (repo *UserRepository) UpdateUser(userId, name, address string) (userBusiness.User, error) {
+func (repo *UserRepository) Update(userId, name, address string) (userBusiness.User, error) {
 	var user User
-	if err := repo.db.Where("id = ?", userId).First(&user).Error; err != nil {
+	err := repo.db.Where("id = ?", userId).First(&user).Error
+	if err != nil {
 		return userBusiness.User{}, err
 	}
 
-	if err := repo.db.Model(&user).Updates(&User{Name: name, Address: address}).Error; err != nil {
+	err = repo.db.Model(&user).Updates(&User{Name: name, Address: address}).Error
+	if err != nil {
 		return userBusiness.User{}, err
 	}
 

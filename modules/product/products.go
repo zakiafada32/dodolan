@@ -33,11 +33,13 @@ func NewProductRepository(db *gorm.DB) *ProductRepository {
 func (repo *ProductRepository) CreateNewProduct(product productBusiness.Product) error {
 	var categories []category.Category
 
-	if err := repo.db.Where("id IN ?", product.CategoryId).Find(&categories).Error; err != nil {
+	err := repo.db.Where("id IN ?", product.CategoryId).Find(&categories).Error
+	if err != nil {
 		return err
 	}
 
-	if err := repo.db.Where("name = ?", product.Name).First(&Product{}).Error; err == nil {
+	err = repo.db.Where("name = ?", product.Name).First(&Product{}).Error
+	if err == nil {
 		return errors.New("the product name already exist")
 	}
 
@@ -48,7 +50,8 @@ func (repo *ProductRepository) CreateNewProduct(product productBusiness.Product)
 	productData := convertToProductModel(product)
 	productData.Categories = categories
 
-	if err := repo.db.Create(&productData).Error; err != nil {
+	err = repo.db.Create(&productData).Error
+	if err != nil {
 		return err
 	}
 

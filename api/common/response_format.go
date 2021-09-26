@@ -33,22 +33,22 @@ func ConstructResponse(status string, data map[string]interface{}) (int, Respons
 		httpStatus = http.StatusBadRequest
 		response.StatusCode = business.BadRequest
 		response.Message = "bad request"
-		response.Data = ""
+		response.Data = map[string]interface{}{}
 	case business.InternalServerError:
 		httpStatus = http.StatusInternalServerError
 		response.StatusCode = business.InternalServerError
 		response.Message = "internal server error"
-		response.Data = ""
+		response.Data = map[string]interface{}{}
 	case business.NotFound:
 		httpStatus = http.StatusNotFound
 		response.StatusCode = business.NotFound
 		response.Message = "data not found"
-		response.Data = ""
+		response.Data = map[string]interface{}{}
 	case business.Unauthorized:
 		httpStatus = http.StatusUnauthorized
 		response.StatusCode = business.Unauthorized
 		response.Message = "unauthorized"
-		response.Data = ""
+		response.Data = map[string]interface{}{}
 	}
 	return httpStatus, response
 }

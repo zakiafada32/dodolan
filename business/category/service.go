@@ -17,16 +17,20 @@ func NewCategoryService(repo Repository) Service {
 	}
 }
 
-func (s *service) CreateNewCategory(category Category) error {
+func (s *service) CreateNew(category Category) error {
 	err := utils.GetValidator().Struct(category)
 	if err != nil {
 		return errors.New(business.BadRequest)
 	}
-	return s.repository.CreateNewCategory(category)
+	err = s.repository.CreateNew(category)
+	if err != nil {
+		return errors.New(business.BadRequest)
+	}
+	return nil
 }
 
-func (s *service) FindAllCategory() ([]Category, error) {
-	categories, err := s.repository.FindAllCategory()
+func (s *service) FindAll() ([]Category, error) {
+	categories, err := s.repository.FindAll()
 	if err != nil {
 		return []Category{}, errors.New(business.InternalServerError)
 	}
@@ -34,8 +38,8 @@ func (s *service) FindAllCategory() ([]Category, error) {
 	return categories, nil
 }
 
-func (s *service) FindCategoryById(categoryId uint32) (Category, error) {
-	productByCategory, err := s.repository.FindCategoryById(categoryId)
+func (s *service) FindById(id uint32) (Category, error) {
+	productByCategory, err := s.repository.FindById(id)
 	if err != nil {
 		return Category{}, errors.New(business.BadRequest)
 	}
@@ -43,8 +47,8 @@ func (s *service) FindCategoryById(categoryId uint32) (Category, error) {
 	return productByCategory, nil
 }
 
-func (s *service) UpdateCategory(categoryId uint32, name string, description string) (Category, error) {
-	category, err := s.repository.UpdateCategory(categoryId, name, description)
+func (s *service) Update(id uint32, name string, description string) (Category, error) {
+	category, err := s.repository.Update(id, name, description)
 	if err != nil {
 		return Category{}, errors.New(business.BadRequest)
 	}

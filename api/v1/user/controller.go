@@ -31,7 +31,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 		return err
 	}
 
-	err := uc.service.CreateNewUser(body.convertToUserBusiness())
+	err := uc.service.CreateNew(body.convertToUserBusiness())
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (uc *UserController) GetCurrentUser(c echo.Context) error {
 	claims := user.Claims.(*utils.JwtCustomClaimsUser)
 	userId := claims.ID
 
-	userData, err := uc.service.GetCurrentUser(userId)
+	userData, err := uc.service.GetCurrent(userId)
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
@@ -84,7 +84,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 	claims := user.Claims.(*utils.JwtCustomClaimsUser)
 	userId := claims.ID
 
-	userData, err := uc.service.UpdateUser(userId, body.Name, body.Address)
+	userData, err := uc.service.Update(userId, body.Name, body.Address)
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}

@@ -1,10 +1,11 @@
 package category
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/zakiafada32/retail/api/common"
+	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/category"
 )
 
@@ -19,58 +20,54 @@ func NewCategoryController(service category.Service) *CategoryController {
 }
 
 func (cont *CategoryController) FindAllCategory(c echo.Context) error {
-	categories, err := cont.service.FindAllCategory()
+	categories, err := cont.service.FindAll()
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{
-		"category": categories,
-	})
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
+		"categories": categories,
+	}))
 }
 
 func (cont *CategoryController) FindCategoryById(c echo.Context) error {
 	id := c.Param("id")
 	categoryId, err := strconv.Atoi(id)
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
-	category, err := cont.service.FindCategoryById(uint32(categoryId))
+	category, err := cont.service.FindById(uint32(categoryId))
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
 		"category": category,
-	})
+	}))
 }
 
 func (cont *CategoryController) CreateNewCategory(c echo.Context) error {
 	var body createNewCategoryRequestBody
 	if err := c.Bind(&body); err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
 	if err := c.Validate(&body); err != nil {
 		return err
 	}
 
-	if err := cont.service.CreateNewCategory(body.convertToCategoryBusiness()); err != nil {
-		return err
+	if err := cont.service.CreateNew(body.convertToCategoryBusiness()); err != nil {
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{
-		"code":    "new_category_created",
-		"message": "new category has been created successfully",
-		"data":    echo.Map{},
-	})
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{}))
 }
 
 func (cont *CategoryController) UpdateCategory(c echo.Context) error {
 	var body updateCategoryRequestBody
 	if err := c.Bind(&body); err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
 	id := c.Param("id")
@@ -79,12 +76,12 @@ func (cont *CategoryController) UpdateCategory(c echo.Context) error {
 		return err
 	}
 
-	category, err := cont.service.UpdateCategory(uint32(categoryId), body.Name, body.Description)
+	category, err := cont.service.Update(uint32(categoryId), body.Name, body.Description)
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
 		"category": category,
-	})
+	}))
 }

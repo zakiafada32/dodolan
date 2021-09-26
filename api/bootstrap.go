@@ -63,14 +63,14 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	productV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
 
 	paymentV1 := e.Group("api/v1/payment-providers")
-	paymentV1.GET("", func(c echo.Context) error { return nil })
-	paymentV1.POST("", c.Payment.CreateNewPaymentProvider)
-	paymentV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
+	paymentV1.GET("", c.Payment.FindAll)
+	paymentV1.POST("", c.Payment.CreateNew, middlewares.Authorized(), middlewares.IsAdmin)
+	paymentV1.PUT("/:id", c.Payment.Update, middlewares.Authorized(), middlewares.IsAdmin)
 
 	courierV1 := e.Group("api/v1/courier-providers")
-	courierV1.GET("", func(c echo.Context) error { return nil })
-	courierV1.POST("", c.Courier.CreateNewCourierProvider)
-	courierV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
+	courierV1.GET("", c.Courier.FindAll)
+	courierV1.POST("", c.Courier.CreateNew, middlewares.Authorized(), middlewares.IsAdmin)
+	courierV1.PUT("/:id", c.Courier.Update, middlewares.Authorized(), middlewares.IsAdmin)
 
 	cartV1 := e.Group("api/v1/cart")
 	cartV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())

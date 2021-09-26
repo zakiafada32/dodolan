@@ -1,9 +1,13 @@
 package payment
 
 type Service interface {
-	CreateNewPaymentProvider(paymentProvider PaymentProvider) error
+	FindAll() ([]PaymentProvider, error)
+	CreateNew(provider PaymentProvider) error
+	Update(id uint32, name, description string) (PaymentProvider, error)
 }
 
 type Repository interface {
-	CreateNewPaymentProvider(paymentProvider PaymentProvider) error
+	FindAll() ([]PaymentProvider, error)
+	CreateNew(provider PaymentProvider) error
+	Update(id uint32, name, description string) (PaymentProvider, error)
 }
