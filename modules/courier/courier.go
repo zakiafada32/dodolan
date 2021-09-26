@@ -58,14 +58,16 @@ func (repo *CourierRepository) CreateNew(provider courierBusiness.CourierProvide
 
 func (repo *CourierRepository) Update(id uint32, name, description string) (courierBusiness.CourierProvider, error) {
 	var courier CourierProvider
-	err := repo.db.Where("name = ?", name).First(&courier).Error
-	if err == nil {
-		return courierBusiness.CourierProvider{}, errors.New("the courier name already exist")
-	}
-
-	err = repo.db.Where("id = ?", id).First(&courier).Error
+	err := repo.db.Where("id = ?", id).First(&courier).Error
 	if err != nil {
 		return courierBusiness.CourierProvider{}, err
+	}
+
+	if len(name) > 0 && name != courier.Name {
+		err = repo.db.Where("name = ?", name).First(&courier).Error
+		if err == nil {
+			return courierBusiness.CourierProvider{}, errors.New("the courier name already exist")
+		}
 	}
 
 	err = repo.db.Model(&courier).Updates(&CourierProvider{Name: name, Description: description}).Error

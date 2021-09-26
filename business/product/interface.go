@@ -1,9 +1,15 @@
 package product
 
 type Service interface {
-	CreateNewProduct(product Product) error
+	FindById(id uint32) (ProductAtt, error)
+	FindAll() ([]ProductAtt, error)
+	CreateNew(product Product) error
+	Update(id uint32, updateData ProductUpdate) (ProductAtt, error)
 }
 
 type Repository interface {
-	CreateNewProduct(product Product) error
+	FindById(id uint32) (ProductAtt, error)
+	FindAll() ([]ProductAtt, error)
+	CreateNew(product Product) error
+	Update(id uint32, updateData ProductUpdate) (ProductAtt, error)
 }

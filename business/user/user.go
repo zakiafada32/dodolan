@@ -5,12 +5,12 @@ import (
 )
 
 type User struct {
-	ID        string
-	Name      string `validate:"required"`
-	Email     string `validate:"required"`
-	Password  string `validate:"required"`
-	Address   string
-	IsAdmin   bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        string    `json:"id"`
+	Name      string    `json:"name" validate:"required"`
+	Email     string    `json:"email" validate:"required"`
+	Password  string    `json:"password" validate:"required"`
+	Address   string    `json:"address" validate:"required"`
+	IsAdmin   bool      `json:"is_admin"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -41,7 +41,7 @@ func (s *service) FindAll() ([]Category, error) {
 func (s *service) FindById(id uint32) (Category, error) {
 	productByCategory, err := s.repository.FindById(id)
 	if err != nil {
-		return Category{}, errors.New(business.BadRequest)
+		return Category{}, errors.New(business.NotFound)
 	}
 
 	return productByCategory, nil

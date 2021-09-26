@@ -73,7 +73,7 @@ func (cont *CategoryController) UpdateCategory(c echo.Context) error {
 	id := c.Param("id")
 	categoryId, err := strconv.Atoi(id)
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
 	category, err := cont.service.Update(uint32(categoryId), body.Name, body.Description)

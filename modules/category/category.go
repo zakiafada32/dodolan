@@ -50,7 +50,7 @@ func (repo *CategoryRepository) FindAll() ([]categoryBusiness.Category, error) {
 
 	categoriesData := make([]categoryBusiness.Category, len(categories))
 	for i, category := range categories {
-		categoriesData[i] = convertToCategoryBusiness(category)
+		categoriesData[i] = ConvertToCategoryBusiness(category)
 	}
 
 	return categoriesData, nil
@@ -64,7 +64,7 @@ func (repo *CategoryRepository) FindById(id uint32) (categoryBusiness.Category, 
 		return categoryBusiness.Category{}, err
 	}
 
-	categoryData := convertToCategoryBusiness(category)
+	categoryData := ConvertToCategoryBusiness(category)
 
 	return categoryData, nil
 
@@ -72,14 +72,16 @@ func (repo *CategoryRepository) FindById(id uint32) (categoryBusiness.Category, 
 
 func (repo *CategoryRepository) Update(id uint32, name string, description string) (categoryBusiness.Category, error) {
 	var category Category
-	err := repo.db.Where("name = ?", name).First(&category).Error
-	if err == nil {
-		return categoryBusiness.Category{}, errors.New("the category name already exist")
-	}
-
-	err = repo.db.Where("id = ?", id).First(&category).Error
+	err := repo.db.Where("id = ?", id).First(&category).Error
 	if err != nil {
 		return categoryBusiness.Category{}, err
+	}
+
+	if len(name) > 0 && name != category.Name {
+		err = repo.db.Where("name = ?", name).First(&Category{}).Error
+		if err == nil {
+			return categoryBusiness.Category{}, errors.New("the category name already exist")
+		}
 	}
 
 	err = repo.db.Model(&category).Updates(&Category{Name: name, Description: description}).Error
@@ -87,7 +89,7 @@ func (repo *CategoryRepository) Update(id uint32, name string, description strin
 		return categoryBusiness.Category{}, err
 	}
 
-	categoryData := convertToCategoryBusiness(category)
+	categoryData := ConvertToCategoryBusiness(category)
 	return categoryData, nil
 }
 
@@ -101,7 +103,7 @@ func convertToCategoryModel(category categoryBusiness.Category) Category {
 	}
 }
 
-func convertToCategoryBusiness(category Category) categoryBusiness.Category {
+func ConvertToCategoryBusiness(category Category) categoryBusiness.Category {
 	return categoryBusiness.Category{
 		ID:          category.ID,
 		Name:        category.Name,

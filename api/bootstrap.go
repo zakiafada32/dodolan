@@ -56,11 +56,11 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	categoryV1.PUT("/:id", c.Category.UpdateCategory, middlewares.Authorized(), middlewares.IsAdmin)
 
 	productV1 := e.Group("api/v1/products")
-	productV1.GET("", func(c echo.Context) error { return nil })
-	productV1.GET("/:id", func(c echo.Context) error { return nil })
+	productV1.GET("", c.Product.FindAll)
+	productV1.GET("/:id", c.Product.FindById)
 	productV1.GET("/categories/:id", func(c echo.Context) error { return nil })
-	productV1.POST("", c.Product.CreateNewProduct, middlewares.Authorized(), middlewares.IsAdmin)
-	productV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
+	productV1.POST("", c.Product.CreateNew, middlewares.Authorized(), middlewares.IsAdmin)
+	productV1.PUT("/:id", c.Product.Update, middlewares.Authorized(), middlewares.IsAdmin)
 
 	paymentV1 := e.Group("api/v1/payment-providers")
 	paymentV1.GET("", c.Payment.FindAll)

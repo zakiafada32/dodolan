@@ -58,14 +58,16 @@ func (repo *PaymentRepository) CreateNew(provider paymentBusiness.PaymentProvide
 
 func (repo *PaymentRepository) Update(id uint32, name, description string) (paymentBusiness.PaymentProvider, error) {
 	var courier PaymentProvider
-	err := repo.db.Where("name = ?", name).First(&courier).Error
-	if err == nil {
-		return paymentBusiness.PaymentProvider{}, errors.New("the courier name already exist")
-	}
-
-	err = repo.db.Where("id = ?", id).First(&courier).Error
+	err := repo.db.Where("id = ?", id).First(&courier).Error
 	if err != nil {
 		return paymentBusiness.PaymentProvider{}, err
+	}
+
+	if len(name) > 0 && name != courier.Name {
+		err = repo.db.Where("name = ?", name).First(&courier).Error
+		if err == nil {
+			return paymentBusiness.PaymentProvider{}, errors.New("the courier name already exist")
+		}
 	}
 
 	err = repo.db.Model(&courier).Updates(&PaymentProvider{Name: name, Description: description}).Error
