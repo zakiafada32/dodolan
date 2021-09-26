@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/zakiafada32/retail/business/payment"
+	paymentBusiness "github.com/zakiafada32/retail/business/payment"
 	"gorm.io/gorm"
 )
 
@@ -26,21 +26,21 @@ func NewPaymentRepository(db *gorm.DB) *PaymentRepository {
 	}
 }
 
-func (pr *PaymentRepository) CreateNewPaymentProvider(provider payment.PaymentProvider) error {
-	if err := pr.db.Where("name = ?", provider.Name).First(&PaymentProvider{}).Error; err == nil {
+func (repo *PaymentRepository) CreateNewPaymentProvider(provider paymentBusiness.PaymentProvider) error {
+	if err := repo.db.Where("name = ?", provider.Name).First(&PaymentProvider{}).Error; err == nil {
 		return errors.New("the payment provider name already exist")
 	}
 
 	providerData := convertToPaymentProviderModel(provider)
 
-	if err := pr.db.Create(&providerData).Error; err != nil {
+	if err := repo.db.Create(&providerData).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func convertToPaymentProviderModel(provider payment.PaymentProvider) PaymentProvider {
+func convertToPaymentProviderModel(provider paymentBusiness.PaymentProvider) PaymentProvider {
 	return PaymentProvider{
 		ID:          provider.ID,
 		Name:        provider.Name,

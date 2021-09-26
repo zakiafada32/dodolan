@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/zakiafada32/retail/business/courier"
+	courierBusiness "github.com/zakiafada32/retail/business/courier"
 	"gorm.io/gorm"
 )
 
@@ -26,21 +26,21 @@ func NewCourierRepository(db *gorm.DB) *CourierRepository {
 	}
 }
 
-func (pr *CourierRepository) CreateNewCourierProvider(provider courier.CourierProvider) error {
-	if err := pr.db.Where("name = ?", provider.Name).First(&CourierProvider{}).Error; err == nil {
+func (repo *CourierRepository) CreateNewCourierProvider(provider courierBusiness.CourierProvider) error {
+	if err := repo.db.Where("name = ?", provider.Name).First(&CourierProvider{}).Error; err == nil {
 		return errors.New("the courier provider name already exist")
 	}
 
 	providerData := convertToCourierProviderModel(provider)
 
-	if err := pr.db.Create(&providerData).Error; err != nil {
+	if err := repo.db.Create(&providerData).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func convertToCourierProviderModel(provider courier.CourierProvider) CourierProvider {
+func convertToCourierProviderModel(provider courierBusiness.CourierProvider) CourierProvider {
 	return CourierProvider{
 		ID:          provider.ID,
 		Name:        provider.Name,

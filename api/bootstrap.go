@@ -49,17 +49,18 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	userV1.POST("/login", c.User.Login)
 	userV1.PUT("/", c.User.UpdateUser, middlewares.Authorized())
 
+	categoryV1 := e.Group("api/v1/categories")
+	categoryV1.GET("", c.Category.FindAllCategory)
+	categoryV1.GET("/:id", c.Category.FindCategoryById)
+	categoryV1.POST("", c.Category.CreateNewCategory, middlewares.Authorized(), middlewares.IsAdmin)
+	categoryV1.PUT("/:id", c.Category.UpdateCategory, middlewares.Authorized(), middlewares.IsAdmin)
+
 	productV1 := e.Group("api/v1/products")
 	productV1.GET("", func(c echo.Context) error { return nil })
 	productV1.GET("/:id", func(c echo.Context) error { return nil })
+	productV1.GET("/categories/:id", func(c echo.Context) error { return nil })
 	productV1.POST("", c.Product.CreateNewProduct, middlewares.Authorized(), middlewares.IsAdmin)
 	productV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
-
-	categoryV1 := e.Group("api/v1/categories")
-	categoryV1.GET("", func(c echo.Context) error { return nil })
-	categoryV1.GET("/:id", func(c echo.Context) error { return nil })
-	categoryV1.POST("", c.Category.CreateNewCategory, middlewares.Authorized(), middlewares.IsAdmin)
-	categoryV1.PUT("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized(), middlewares.IsAdmin)
 
 	paymentV1 := e.Group("api/v1/payment-providers")
 	paymentV1.GET("", func(c echo.Context) error { return nil })

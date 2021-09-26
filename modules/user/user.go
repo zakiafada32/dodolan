@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/zakiafada32/retail/business/user"
 	userBusiness "github.com/zakiafada32/retail/business/user"
 	"gorm.io/gorm"
 )
@@ -30,23 +29,33 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (ur *UserRepository) CreateNewUser(user userBusiness.User) error {
-	if err := ur.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
+func (repo *UserRepository) CreateNewUser(user userBusiness.User) error {
+	if err := repo.db.Where("email = ?", user.Email).First(&User{}).Error; err == nil {
 		return errors.New("email already exist")
 	}
 
 	userData := convertToUserModel(user)
 
-	if err := ur.db.Create(&userData).Error; err != nil {
+	if err := repo.db.Create(&userData).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (ur *UserRepository) FindById(userId string) (userBusiness.User, error) {
+func (repo *UserRepository) FindById(userId string) (userBusiness.User, error) {
+	var userData User
+	if err := repo.db.Where("id = ?", userId).First(&userData).Error; err != nil {
+		return userBusiness.User{}, err
+	}
+
+	userBusiness := convertToUserBusiness(userData)
+	return userBusiness, nil
+}
+
+func (repo *UserRepository) FindByEmail(email string) (userBusiness.User, error) {
 	var user User
-	if err := ur.db.Where("id = ?", userId).First(&user).Error; err != nil {
+	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
 		return userBusiness.User{}, err
 	}
 
@@ -54,23 +63,13 @@ func (ur *UserRepository) FindById(userId string) (userBusiness.User, error) {
 	return userBusiness, nil
 }
 
-func (ur *UserRepository) FindByEmail(email string) (userBusiness.User, error) {
+func (repo *UserRepository) UpdateUser(userId, name, address string) (userBusiness.User, error) {
 	var user User
-	if err := ur.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := repo.db.Where("id = ?", userId).First(&user).Error; err != nil {
 		return userBusiness.User{}, err
 	}
 
-	userBusiness := convertToUserBusiness(user)
-	return userBusiness, nil
-}
-
-func (ur *UserRepository) UpdateUser(userId string, updateData user.UpdateUser) (userBusiness.User, error) {
-	var user User
-	if err := ur.db.Where("id = ?", userId).First(&user).Error; err != nil {
-		return userBusiness.User{}, err
-	}
-
-	if err := ur.db.Model(&user).Updates(&User{Name: updateData.Name, Address: updateData.Address}).Error; err != nil {
+	if err := repo.db.Model(&user).Updates(&User{Name: name, Address: address}).Error; err != nil {
 		return userBusiness.User{}, err
 	}
 

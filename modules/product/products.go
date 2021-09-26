@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/zakiafada32/retail/business/product"
+	productBusiness "github.com/zakiafada32/retail/business/product"
 	"github.com/zakiafada32/retail/modules/category"
 	"gorm.io/gorm"
 )
@@ -30,14 +30,14 @@ func NewProductRepository(db *gorm.DB) *ProductRepository {
 	}
 }
 
-func (pr *ProductRepository) CreateNewProduct(product product.Product) error {
+func (repo *ProductRepository) CreateNewProduct(product productBusiness.Product) error {
 	var categories []category.Category
 
-	if err := pr.db.Where("id IN ?", product.CategoryId).Find(&categories).Error; err != nil {
+	if err := repo.db.Where("id IN ?", product.CategoryId).Find(&categories).Error; err != nil {
 		return err
 	}
 
-	if err := pr.db.Where("name = ?", product.Name).First(&Product{}).Error; err == nil {
+	if err := repo.db.Where("name = ?", product.Name).First(&Product{}).Error; err == nil {
 		return errors.New("the product name already exist")
 	}
 
@@ -48,14 +48,14 @@ func (pr *ProductRepository) CreateNewProduct(product product.Product) error {
 	productData := convertToProductModel(product)
 	productData.Categories = categories
 
-	if err := pr.db.Create(&productData).Error; err != nil {
+	if err := repo.db.Create(&productData).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func convertToProductModel(product product.Product) Product {
+func convertToProductModel(product productBusiness.Product) Product {
 	return Product{
 		ID:          product.ID,
 		Name:        product.Name,

@@ -29,10 +29,3 @@ type updateUserRequestBody struct {
 	Name    string `json:"name"`
 	Address string `json:"address"`
 }
-
-func (req *updateUserRequestBody) convertToUpdateUserBusiness() user.UpdateUser {
-	return user.UpdateUser{
-		Name:    req.Name,
-		Address: req.Address,
-	}
-}

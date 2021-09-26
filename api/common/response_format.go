@@ -17,6 +17,18 @@ func ConstructResponse(status string, data map[string]interface{}) (int, Respons
 	var response ResponseFormat
 
 	switch status {
+	// success response
+	case business.Success:
+		httpStatus = http.StatusOK
+		response.StatusCode = business.Success
+		response.Message = "success"
+		response.Data = data
+	case business.SucessCreated:
+		httpStatus = http.StatusCreated
+		response.StatusCode = business.SucessCreated
+		response.Message = "success created"
+		response.Data = data
+	// error response
 	case business.BadRequest:
 		httpStatus = http.StatusBadRequest
 		response.StatusCode = business.BadRequest
@@ -27,12 +39,16 @@ func ConstructResponse(status string, data map[string]interface{}) (int, Respons
 		response.StatusCode = business.InternalServerError
 		response.Message = "internal server error"
 		response.Data = ""
-	case business.LoginSuccess:
-		httpStatus = http.StatusOK
-		response.StatusCode = business.LoginSuccess
-		response.Message = "login success"
-		response.Data = data
+	case business.NotFound:
+		httpStatus = http.StatusNotFound
+		response.StatusCode = business.NotFound
+		response.Message = "data not found"
+		response.Data = ""
+	case business.Unauthorized:
+		httpStatus = http.StatusUnauthorized
+		response.StatusCode = business.Unauthorized
+		response.Message = "unauthorized"
+		response.Data = ""
 	}
-
 	return httpStatus, response
 }

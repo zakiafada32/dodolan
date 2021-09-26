@@ -25,7 +25,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 
 	var body createNewUserRequestBody
 	if err := c.Bind(&body); err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 	if err := c.Validate(&body); err != nil {
 		return err
@@ -36,11 +36,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusCreated, echo.Map{
-		"code":    "new_user_created",
-		"message": "new user created has been created successfully",
-		"data":    map[string]interface{}{},
-	})
+	return c.JSON(common.ConstructResponse(business.SucessCreated, echo.Map{}))
 }
 
 func (uc *UserController) GetCurrentUser(c echo.Context) error {
@@ -50,12 +46,12 @@ func (uc *UserController) GetCurrentUser(c echo.Context) error {
 
 	userData, err := uc.service.GetCurrentUser(userId)
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 	userResponse := convertToUserResponse(userData)
-	return c.JSON(http.StatusOK, echo.Map{
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
 		"user": userResponse,
-	})
+	}))
 
 }
 
@@ -63,7 +59,7 @@ func (uc *UserController) Login(c echo.Context) error {
 	var body loginRequestBody
 
 	if err := c.Bind(&body); err != nil {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 	if err := c.Validate(&body); err != nil {
 		return err
@@ -71,26 +67,26 @@ func (uc *UserController) Login(c echo.Context) error {
 
 	token, err := uc.service.Login(body.Email, body.Password)
 	if err != nil {
-		return c.NoContent(http.StatusUnauthorized)
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(common.ConstructResponse(business.LoginSuccess, echo.Map{"token": token}))
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{"token": token}))
 }
 
 func (uc *UserController) UpdateUser(c echo.Context) error {
 	var body updateUserRequestBody
 
 	if err := c.Bind(&body); err != nil {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*utils.JwtCustomClaimsUser)
 	userId := claims.ID
 
-	userData, err := uc.service.UpdateUser(userId, body.convertToUpdateUserBusiness())
+	userData, err := uc.service.UpdateUser(userId, body.Name, body.Address)
 	if err != nil {
-		return c.NoContent(http.StatusBadRequest)
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 	userResponse := convertToUserResponse(userData)
 	return c.JSON(http.StatusOK, echo.Map{
