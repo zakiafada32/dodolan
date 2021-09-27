@@ -8,10 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
+type Product struct {
+	ID          uint32 `gorm:"primaryKey"`
+	Name        string
+	Description string
+	Stock       uint32
+	Price       uint64
+	Categories  []*Category `gorm:"many2many:product_categories;"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
 type Category struct {
 	ID          uint32 `gorm:"primaryKey"`
 	Name        string
 	Description string
+	Products    []*Product `gorm:"many2many:product_categories;"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

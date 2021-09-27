@@ -27,13 +27,3 @@ type ProductAtt struct {
 	CreatedAt   time.Time           `json:"created_at"`
 	UpdatedAt   time.Time           `json:"updated_at"`
 }
-
-type ProductUpdate struct {
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	Stock        uint32    `json:"stock" `
-	Price        uint64    `json:"price"`
-	CategoriesId []uint32  `json:"categories"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}

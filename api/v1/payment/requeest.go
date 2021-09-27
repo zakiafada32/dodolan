@@ -2,19 +2,14 @@ package payment
 
 import "github.com/zakiafada32/retail/business/payment"
 
-type createNewPaymentProviderRequestBody struct {
+type paymentProviderRequestBody struct {
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 }
 
-func (req *createNewPaymentProviderRequestBody) convertToPaymentProviderBusiness() payment.PaymentProvider {
+func (req *paymentProviderRequestBody) convertToPaymentProviderBusiness() payment.PaymentProvider {
 	return payment.PaymentProvider{
 		Name:        req.Name,
 		Description: req.Description,
 	}
-}
-
-type updatePaymentProviderRequestBody struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
 }

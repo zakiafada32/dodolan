@@ -1,8 +1,6 @@
 package user
 
 import (
-	"net/http"
-
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/zakiafada32/retail/api/common"
@@ -23,7 +21,7 @@ func NewUserController(service user.Service) *UserController {
 
 func (uc *UserController) CreateNewUser(c echo.Context) error {
 
-	var body createNewUserRequestBody
+	var body userRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -74,7 +72,7 @@ func (uc *UserController) Login(c echo.Context) error {
 }
 
 func (uc *UserController) UpdateUser(c echo.Context) error {
-	var body updateUserRequestBody
+	var body userRequestBody
 
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
@@ -89,7 +87,7 @@ func (uc *UserController) UpdateUser(c echo.Context) error {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 	userResponse := convertToUserResponse(userData)
-	return c.JSON(http.StatusOK, echo.Map{
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
 		"user": userResponse,
-	})
+	}))
 }

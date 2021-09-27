@@ -49,7 +49,7 @@ func (cont *ProductController) FindAll(c echo.Context) error {
 }
 
 func (cont *ProductController) CreateNew(c echo.Context) error {
-	var body createNewProductRequestBody
+	var body productRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -66,7 +66,7 @@ func (cont *ProductController) CreateNew(c echo.Context) error {
 }
 
 func (cont *ProductController) Update(c echo.Context) error {
-	var body updateProductRequestBody
+	var body productRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -77,12 +77,29 @@ func (cont *ProductController) Update(c echo.Context) error {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
 
-	product, err := cont.service.Update(uint32(productId), body.convertToUpdateProductBusiness())
+	product, err := cont.service.Update(uint32(productId), body.convertToProductBusiness())
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(common.ConstructResponse(business.SucessCreated, echo.Map{
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
 		"product": product,
+	}))
+}
+
+func (cont *ProductController) FindByCategory(c echo.Context) error {
+	id := c.Param("id")
+	productId, err := strconv.Atoi(id)
+	if err != nil {
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
+	}
+
+	products, err := cont.service.FindByCategory(uint32(productId))
+	if err != nil {
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
+	}
+
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
+		"products": products,
 	}))
 }

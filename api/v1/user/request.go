@@ -2,7 +2,7 @@ package user
 
 import "github.com/zakiafada32/retail/business/user"
 
-type createNewUserRequestBody struct {
+type userRequestBody struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,gte=8"`
@@ -10,7 +10,7 @@ type createNewUserRequestBody struct {
 	IsAdmin  bool   `json:"is_admin"`
 }
 
-func (req *createNewUserRequestBody) convertToUserBusiness() user.User {
+func (req *userRequestBody) convertToUserBusiness() user.User {
 	return user.User{
 		Name:     req.Name,
 		Email:    req.Email,
@@ -23,9 +23,4 @@ func (req *createNewUserRequestBody) convertToUserBusiness() user.User {
 type loginRequestBody struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
-}
-
-type updateUserRequestBody struct {
-	Name    string `json:"name"`
-	Address string `json:"address"`
 }

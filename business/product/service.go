@@ -45,11 +45,20 @@ func (s *service) CreateNew(product Product) error {
 	return nil
 }
 
-func (s *service) Update(id uint32, updateData ProductUpdate) (ProductAtt, error) {
+func (s *service) Update(id uint32, updateData Product) (ProductAtt, error) {
 	product, err := s.repository.Update(id, updateData)
 	if err != nil {
 		return ProductAtt{}, errors.New(business.BadRequest)
 	}
 
 	return product, nil
+}
+
+func (s *service) FindByCategory(categoryId uint32) ([]ProductAtt, error) {
+	products, err := s.repository.FindByCategory(categoryId)
+	if err != nil {
+		return []ProductAtt{}, errors.New(business.BadRequest)
+	}
+
+	return products, nil
 }

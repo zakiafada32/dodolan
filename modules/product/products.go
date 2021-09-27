@@ -2,26 +2,14 @@ package product
 
 import (
 	"errors"
-	"time"
 
 	business "github.com/zakiafada32/retail/business/product"
-	moduleCategory "github.com/zakiafada32/retail/modules/category"
+	module "github.com/zakiafada32/retail/modules/category"
 	"gorm.io/gorm"
 )
 
 type ProductRepository struct {
 	db *gorm.DB
-}
-
-type Product struct {
-	ID          uint32 `gorm:"primaryKey"`
-	Name        string
-	Description string
-	Stock       *uint32
-	Price       uint64
-	Categories  []moduleCategory.Category `gorm:"many2many:product_categories;"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
 }
 
 func NewProductRepository(db *gorm.DB) *ProductRepository {
@@ -31,22 +19,22 @@ func NewProductRepository(db *gorm.DB) *ProductRepository {
 }
 
 func (repo *ProductRepository) FindById(id uint32) (business.ProductAtt, error) {
-	var product Product
+	var product module.Product
 	err := repo.db.Preload("Categories").Where("id = ?", id).First(&product).Error
 	if err != nil {
 		return business.ProductAtt{}, err
 	}
 
 	productData := convertToProductAttBusiness(product)
-	for _, category := range product.Categories {
-		productData.Categories = append(productData.Categories, moduleCategory.ConvertToCategoryBusiness(category))
+	for _, categoryData := range product.Categories {
+		productData.Categories = append(productData.Categories, module.ConvertToCategoryBusiness(*categoryData))
 	}
 
 	return productData, nil
 }
 
 func (repo *ProductRepository) FindAll() ([]business.ProductAtt, error) {
-	var products []Product
+	var products []module.Product
 	err := repo.db.Preload("Categories").Find(&products).Error
 	if err != nil {
 		return []business.ProductAtt{}, err
@@ -56,7 +44,7 @@ func (repo *ProductRepository) FindAll() ([]business.ProductAtt, error) {
 	for i, product := range products {
 		productsData[i] = convertToProductAttBusiness(product)
 		for _, category := range product.Categories {
-			productsData[i].Categories = append(productsData[i].Categories, moduleCategory.ConvertToCategoryBusiness(category))
+			productsData[i].Categories = append(productsData[i].Categories, module.ConvertToCategoryBusiness(*category))
 		}
 	}
 
@@ -64,14 +52,14 @@ func (repo *ProductRepository) FindAll() ([]business.ProductAtt, error) {
 }
 
 func (repo *ProductRepository) CreateNew(product business.Product) error {
-	var categories []moduleCategory.Category
+	var categories []*module.Category
 
 	err := repo.db.Where("id IN ?", product.CategoriesId).Find(&categories).Error
 	if err != nil {
 		return err
 	}
 
-	err = repo.db.Where("name = ?", product.Name).First(&Product{}).Error
+	err = repo.db.Where("name = ?", product.Name).First(&module.Product{}).Error
 	if err == nil {
 		return errors.New("the product name already exist")
 	}
@@ -91,8 +79,8 @@ func (repo *ProductRepository) CreateNew(product business.Product) error {
 	return nil
 }
 
-func (repo *ProductRepository) Update(id uint32, updateData business.ProductUpdate) (business.ProductAtt, error) {
-	var product Product
+func (repo *ProductRepository) Update(id uint32, updateData business.Product) (business.ProductAtt, error) {
+	var product module.Product
 	err := repo.db.Preload("Categories").Where("id = ?", id).First(&product).Error
 	if err != nil {
 		return business.ProductAtt{}, err
@@ -105,20 +93,29 @@ func (repo *ProductRepository) Update(id uint32, updateData business.ProductUpda
 		}
 	}
 
-	// todo: cannot update category
-	// var categories []moduleCategory.Category
-	// err = repo.db.Where("id IN ?", updateData.CategoriesId).Find(&categories).Error
-	// if err != nil {
-	// 	return business.ProductAtt{}, err
-	// }
-	// if len(categories) != len(updateData.CategoriesId) {
-	// 	return business.ProductAtt{}, errors.New("category not found")
-	// }
+	if len(updateData.CategoriesId) > 0 {
+		var categories []module.Category
+		err = repo.db.Where("id IN ?", updateData.CategoriesId).Find(&categories).Error
+		if err != nil {
+			return business.ProductAtt{}, err
+		}
+		if len(categories) != len(updateData.CategoriesId) {
+			return business.ProductAtt{}, errors.New("category not found")
+		}
+		err = repo.db.Model(&product).Association("Categories").Delete(product.Categories)
+		if err != nil {
+			return business.ProductAtt{}, err
+		}
+		err = repo.db.Model(&product).Association("Categories").Replace(categories)
+		if err != nil {
+			return business.ProductAtt{}, err
+		}
+	}
 
-	err = repo.db.Model(&product).Updates(&Product{
+	err = repo.db.Model(&product).Updates(&module.Product{
 		Name:        updateData.Name,
 		Description: updateData.Description,
-		Stock:       &updateData.Stock,
+		Stock:       updateData.Stock,
 		Price:       updateData.Price,
 	}).Error
 	if err != nil {
@@ -127,42 +124,66 @@ func (repo *ProductRepository) Update(id uint32, updateData business.ProductUpda
 
 	productData := convertToProductAttBusiness(product)
 	for _, category := range product.Categories {
-		productData.Categories = append(productData.Categories, moduleCategory.ConvertToCategoryBusiness(category))
+		productData.Categories = append(productData.Categories, module.ConvertToCategoryBusiness(*category))
 	}
 	return productData, nil
 
 }
 
-func convertToProductModel(product business.Product) Product {
-	return Product{
+func (repo *ProductRepository) FindByCategory(categoryId uint32) ([]business.ProductAtt, error) {
+	var category module.Category
+	err := repo.db.Where("id = ?", categoryId).First(&category).Error
+	if err != nil {
+		return []business.ProductAtt{}, err
+	}
+
+	var products []module.Product
+	err = repo.db.Model(&category).Preload("Categories").Association("Products").Find(&products)
+	if err != nil {
+		return []business.ProductAtt{}, err
+	}
+
+	productsData := make([]business.ProductAtt, len(products))
+	for i, product := range products {
+		productsData[i] = convertToProductAttBusiness(product)
+		for _, category := range product.Categories {
+			productsData[i].Categories = append(productsData[i].Categories, module.ConvertToCategoryBusiness(*category))
+		}
+	}
+
+	return productsData, nil
+}
+
+func convertToProductModel(product business.Product) module.Product {
+	return module.Product{
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
-		Stock:       &product.Stock,
+		Stock:       product.Stock,
 		Price:       product.Price,
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 	}
 }
 
-func convertToProductBusiness(product Product) business.Product {
+func convertToProductBusiness(product module.Product) business.Product {
 	return business.Product{
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
-		Stock:       *product.Stock,
+		Stock:       product.Stock,
 		Price:       product.Price,
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 	}
 }
 
-func convertToProductAttBusiness(product Product) business.ProductAtt {
+func convertToProductAttBusiness(product module.Product) business.ProductAtt {
 	return business.ProductAtt{
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
-		Stock:       *product.Stock,
+		Stock:       product.Stock,
 		Price:       product.Price,
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,

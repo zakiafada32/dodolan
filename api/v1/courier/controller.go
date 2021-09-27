@@ -31,7 +31,7 @@ func (cont *CourierController) FindAll(c echo.Context) error {
 }
 
 func (cont *CourierController) CreateNew(c echo.Context) error {
-	var body createNewCourierProviderRequestBody
+	var body courierProviderRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -48,7 +48,7 @@ func (cont *CourierController) CreateNew(c echo.Context) error {
 }
 
 func (cont *CourierController) Update(c echo.Context) error {
-	var body updateCourierProviderRequestBody
+	var body courierProviderRequestBody
 	if err := c.Bind(&body); err != nil {
 		return err
 	}

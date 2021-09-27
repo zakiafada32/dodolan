@@ -58,7 +58,7 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	productV1 := e.Group("api/v1/products")
 	productV1.GET("", c.Product.FindAll)
 	productV1.GET("/:id", c.Product.FindById)
-	productV1.GET("/categories/:id", func(c echo.Context) error { return nil })
+	productV1.GET("/categories/:id", c.Product.FindByCategory)
 	productV1.POST("", c.Product.CreateNew, middlewares.Authorized(), middlewares.IsAdmin)
 	productV1.PUT("/:id", c.Product.Update, middlewares.Authorized(), middlewares.IsAdmin)
 

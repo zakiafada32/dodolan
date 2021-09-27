@@ -48,7 +48,7 @@ func (cont *CategoryController) FindCategoryById(c echo.Context) error {
 }
 
 func (cont *CategoryController) CreateNewCategory(c echo.Context) error {
-	var body createNewCategoryRequestBody
+	var body categoryRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -65,7 +65,7 @@ func (cont *CategoryController) CreateNewCategory(c echo.Context) error {
 }
 
 func (cont *CategoryController) UpdateCategory(c echo.Context) error {
-	var body updateCategoryRequestBody
+	var body categoryRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}

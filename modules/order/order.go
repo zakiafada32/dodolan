@@ -3,9 +3,9 @@ package order
 import (
 	"time"
 
+	"github.com/zakiafada32/retail/modules/category"
 	"github.com/zakiafada32/retail/modules/courier"
 	"github.com/zakiafada32/retail/modules/payment"
-	"github.com/zakiafada32/retail/modules/product"
 	"github.com/zakiafada32/retail/modules/user"
 )
 
@@ -28,7 +28,7 @@ type Order struct {
 type OrderItem struct {
 	OrderID     uint32
 	ProductID   uint32
-	Product     product.Product
+	Product     category.Product
 	Quantity    uint32
 	TotalAmount uint64
 	CreatedAt   time.Time

@@ -31,7 +31,7 @@ func (cont *PaymentController) FindAll(c echo.Context) error {
 }
 
 func (cont *PaymentController) CreateNew(c echo.Context) error {
-	var body createNewPaymentProviderRequestBody
+	var body paymentProviderRequestBody
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
@@ -48,7 +48,7 @@ func (cont *PaymentController) CreateNew(c echo.Context) error {
 }
 
 func (cont *PaymentController) Update(c echo.Context) error {
-	var body updatePaymentProviderRequestBody
+	var body paymentProviderRequestBody
 	if err := c.Bind(&body); err != nil {
 		return err
 	}
