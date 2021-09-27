@@ -78,7 +78,7 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	cartV1.GET("", c.Cart.FindAll, middlewares.Authorized())
 	cartV1.POST("", c.Cart.AddCartItem, middlewares.Authorized())
 	cartV1.POST("/delete", c.Cart.DeleteCartItem, middlewares.Authorized())
-	cartV1.POST("/checkout", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	cartV1.POST("/checkout", c.Cart.Checkout, middlewares.Authorized())
 
 	orderV1 := e.Group("api/v1/orders")
 	orderV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())

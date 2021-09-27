@@ -6,6 +6,7 @@ import (
 
 	cartBusiness "github.com/zakiafada32/retail/business/cart"
 	"github.com/zakiafada32/retail/modules/category"
+	"github.com/zakiafada32/retail/modules/order"
 	"github.com/zakiafada32/retail/modules/user"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -84,6 +85,42 @@ func (repo *CartRepository) DeleteCartItem(userId string, productsId []uint32) e
 	return nil
 }
 
+func (repo *CartRepository) Checkout(userId string, paymentId uint32, courierId uint32, cart cartBusiness.Cart) error {
+	yet := false
+	orderData := order.Order{
+		UserID:            userId,
+		PaymentProviderID: paymentId,
+		PaymentStatus:     &yet,
+		CourierProviderID: courierId,
+		CourierStatus:     &yet,
+		TotalAmount:       cart.TotalAmount,
+	}
+
+	err := repo.db.Create(&orderData).Error
+	if err != nil {
+		return err
+	}
+
+	orderItem := make([]order.OrderItem, len(cart.Items))
+	for i, item := range cart.Items {
+		err = updateProduct(repo.db, item.Product.ID, item.Quantity)
+		if err != nil {
+			return err
+		}
+		orderItem[i].OrderID = orderData.ID
+		orderItem[i].ProductID = item.Product.ID
+		orderItem[i].Quantity = item.Quantity
+		orderItem[i].TotalAmount = item.TotalAmount
+	}
+
+	err = repo.db.Create(&orderItem).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func convertToCartAttBusiness(cartItem CartItem) cartBusiness.CartItemAtt {
 	return cartBusiness.CartItemAtt{
 		Quantity:    cartItem.Quantity,
@@ -95,4 +132,26 @@ func convertToCartAttBusiness(cartItem CartItem) cartBusiness.CartItemAtt {
 			Price:       cartItem.Product.Price,
 		},
 	}
+}
+
+func updateProduct(db *gorm.DB, id uint32, quantity uint32) error {
+	var product category.Product
+	err := db.Where("id = ?", id).First(&product).Error
+	if err != nil {
+		return err
+	}
+
+	if product.Stock < quantity {
+		return errors.New("stock of the product not enough")
+	}
+
+	product.Stock -= quantity
+
+	err = db.Model(&product).Updates(&category.Product{Stock: product.Stock}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

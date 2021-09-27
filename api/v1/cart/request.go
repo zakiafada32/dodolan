@@ -17,3 +17,8 @@ func (r *cartRequestBody) convertToCartItemBusiness() cart.CartItem {
 type deleteCartItemRequestBody struct {
 	ProductsID []uint32 `json:"products_id" validate:"required"`
 }
+
+type checkoutCartRequestBody struct {
+	PaymentID uint32 `json:"payment_id" validate:"required"`
+	CourierID uint32 `json:"courier_id" validate:"required"`
+}

@@ -76,3 +76,25 @@ func (cont *CartController) DeleteCartItem(c echo.Context) error {
 
 	return c.JSON(common.ConstructResponse(business.Success, echo.Map{}))
 }
+
+func (cont *CartController) Checkout(c echo.Context) error {
+	var body checkoutCartRequestBody
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
+	}
+
+	if err := c.Validate(&body); err != nil {
+		return err
+	}
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*utils.JwtCustomClaimsUser)
+	userId := claims.ID
+
+	err := cont.service.Checkout(userId, body.PaymentID, body.CourierID)
+	if err != nil {
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
+	}
+
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{}))
+}

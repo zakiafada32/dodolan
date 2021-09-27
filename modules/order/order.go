@@ -13,7 +13,6 @@ type Order struct {
 	ID                uint32
 	UserID            string
 	User              user.User
-	OrderItems        []OrderItem
 	TotalAmount       uint64
 	PaymentProviderID uint32
 	PaymentProvider   payment.PaymentProvider
@@ -27,6 +26,7 @@ type Order struct {
 
 type OrderItem struct {
 	OrderID     uint32
+	Order       Order
 	ProductID   uint32
 	Product     category.Product
 	Quantity    uint32

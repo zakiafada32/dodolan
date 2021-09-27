@@ -1,7 +1,7 @@
 package cart
 
 type Cart struct {
-	Item        []CartItemAtt `json:"item"`
+	Items       []CartItemAtt `json:"item"`
 	TotalAmount uint64        `json:"total_amount"`
 }
 
