@@ -93,31 +93,39 @@ func (repo *ProductRepository) Update(id uint32, updateData business.Product) (b
 		}
 	}
 
-	if len(updateData.CategoriesId) > 0 {
-		var categories []module.Category
-		err = repo.db.Where("id IN ?", updateData.CategoriesId).Find(&categories).Error
-		if err != nil {
-			return business.ProductAtt{}, err
-		}
-		if len(categories) != len(updateData.CategoriesId) {
-			return business.ProductAtt{}, errors.New("category not found")
-		}
-		err = repo.db.Model(&product).Association("Categories").Delete(product.Categories)
-		if err != nil {
-			return business.ProductAtt{}, err
-		}
-		err = repo.db.Model(&product).Association("Categories").Replace(categories)
-		if err != nil {
-			return business.ProductAtt{}, err
-		}
-	}
+	err = repo.db.Transaction(func(tx *gorm.DB) error {
+		if len(updateData.CategoriesId) > 0 {
+			var categories []module.Category
+			err = tx.Where("id IN ?", updateData.CategoriesId).Find(&categories).Error
+			if err != nil {
+				return err
+			}
+			if len(categories) != len(updateData.CategoriesId) {
+				return errors.New("category not found")
+			}
 
-	err = repo.db.Model(&product).Updates(&module.Product{
-		Name:        updateData.Name,
-		Description: updateData.Description,
-		Stock:       updateData.Stock,
-		Price:       updateData.Price,
-	}).Error
+			err = tx.Model(&product).Association("Categories").Delete(product.Categories)
+			if err != nil {
+				return err
+			}
+			err = tx.Model(&product).Association("Categories").Replace(categories)
+			if err != nil {
+				return err
+			}
+		}
+		err = tx.Model(&product).Updates(&module.Product{
+			Name:        updateData.Name,
+			Description: updateData.Description,
+			Stock:       updateData.Stock,
+			Price:       updateData.Price,
+		}).Error
+		if err != nil {
+			return err
+		}
+		return nil
+
+	})
+
 	if err != nil {
 		return business.ProductAtt{}, err
 	}

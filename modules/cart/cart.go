@@ -86,42 +86,44 @@ func (repo *CartRepository) DeleteCartItem(userId string, productsId []uint32) e
 }
 
 func (repo *CartRepository) Checkout(userId string, paymentId uint32, courierId uint32, cart cartBusiness.Cart) error {
-	for _, item := range cart.Items {
-		err := updateProductStock(repo.db, item.Product.ID, item.Quantity)
+	err := repo.db.Transaction(func(tx *gorm.DB) error {
+		for _, item := range cart.Items {
+			err := updateProductStock(tx, item.Product.ID, item.Quantity)
+			if err != nil {
+				return err
+			}
+		}
+
+		yet := false
+		orderData := order.Order{
+			UserID:            userId,
+			PaymentProviderID: paymentId,
+			PaymentStatus:     &yet,
+			CourierProviderID: courierId,
+			CourierStatus:     &yet,
+			TotalAmount:       cart.TotalAmount,
+		}
+
+		err := tx.Create(&orderData).Error
 		if err != nil {
 			return err
 		}
-	}
 
-	yet := false
-	orderData := order.Order{
-		UserID:            userId,
-		PaymentProviderID: paymentId,
-		PaymentStatus:     &yet,
-		CourierProviderID: courierId,
-		CourierStatus:     &yet,
-		TotalAmount:       cart.TotalAmount,
-	}
+		orderItem := make([]order.OrderItem, len(cart.Items))
+		for i, item := range cart.Items {
+			orderItem[i].OrderID = orderData.ID
+			orderItem[i].ProductID = item.Product.ID
+			orderItem[i].Quantity = item.Quantity
+			orderItem[i].TotalAmount = item.TotalAmount
+		}
 
-	err := repo.db.Create(&orderData).Error
-	if err != nil {
-		return err
-	}
-
-	orderItem := make([]order.OrderItem, len(cart.Items))
-	for i, item := range cart.Items {
-		orderItem[i].OrderID = orderData.ID
-		orderItem[i].ProductID = item.Product.ID
-		orderItem[i].Quantity = item.Quantity
-		orderItem[i].TotalAmount = item.TotalAmount
-	}
-
-	err = repo.db.Create(&orderItem).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
+		err = tx.Create(&orderItem).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
 
 func convertToCartAttBusiness(cartItem CartItem) cartBusiness.CartItemAtt {
