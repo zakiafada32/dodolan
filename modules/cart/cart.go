@@ -86,6 +86,13 @@ func (repo *CartRepository) DeleteCartItem(userId string, productsId []uint32) e
 }
 
 func (repo *CartRepository) Checkout(userId string, paymentId uint32, courierId uint32, cart cartBusiness.Cart) error {
+	for _, item := range cart.Items {
+		err := updateProduct(repo.db, item.Product.ID, item.Quantity)
+		if err != nil {
+			return err
+		}
+	}
+
 	yet := false
 	orderData := order.Order{
 		UserID:            userId,
@@ -103,10 +110,6 @@ func (repo *CartRepository) Checkout(userId string, paymentId uint32, courierId 
 
 	orderItem := make([]order.OrderItem, len(cart.Items))
 	for i, item := range cart.Items {
-		err = updateProduct(repo.db, item.Product.ID, item.Quantity)
-		if err != nil {
-			return err
-		}
 		orderItem[i].OrderID = orderData.ID
 		orderItem[i].ProductID = item.Product.ID
 		orderItem[i].Quantity = item.Quantity
