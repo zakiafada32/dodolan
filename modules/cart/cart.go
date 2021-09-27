@@ -87,7 +87,7 @@ func (repo *CartRepository) DeleteCartItem(userId string, productsId []uint32) e
 
 func (repo *CartRepository) Checkout(userId string, paymentId uint32, courierId uint32, cart cartBusiness.Cart) error {
 	for _, item := range cart.Items {
-		err := updateProduct(repo.db, item.Product.ID, item.Quantity)
+		err := updateProductStock(repo.db, item.Product.ID, item.Quantity)
 		if err != nil {
 			return err
 		}
@@ -137,7 +137,7 @@ func convertToCartAttBusiness(cartItem CartItem) cartBusiness.CartItemAtt {
 	}
 }
 
-func updateProduct(db *gorm.DB, id uint32, quantity uint32) error {
+func updateProductStock(db *gorm.DB, id uint32, quantity uint32) error {
 	var product category.Product
 	err := db.Where("id = ?", id).First(&product).Error
 	if err != nil {

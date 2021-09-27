@@ -15,6 +15,7 @@ import (
 	cartController "github.com/zakiafada32/retail/api/v1/cart"
 	categoryController "github.com/zakiafada32/retail/api/v1/category"
 	courierController "github.com/zakiafada32/retail/api/v1/courier"
+	orderController "github.com/zakiafada32/retail/api/v1/order"
 	paymentController "github.com/zakiafada32/retail/api/v1/payment"
 	productController "github.com/zakiafada32/retail/api/v1/product"
 	userController "github.com/zakiafada32/retail/api/v1/user"
@@ -22,6 +23,7 @@ import (
 	cartService "github.com/zakiafada32/retail/business/cart"
 	categoryService "github.com/zakiafada32/retail/business/category"
 	courierService "github.com/zakiafada32/retail/business/courier"
+	orderService "github.com/zakiafada32/retail/business/order"
 	paymentService "github.com/zakiafada32/retail/business/payment"
 	productService "github.com/zakiafada32/retail/business/product"
 	userService "github.com/zakiafada32/retail/business/user"
@@ -29,6 +31,7 @@ import (
 	cartRepository "github.com/zakiafada32/retail/modules/cart"
 	categoryRepository "github.com/zakiafada32/retail/modules/category"
 	courierRepository "github.com/zakiafada32/retail/modules/courier"
+	orderRepository "github.com/zakiafada32/retail/modules/order"
 	paymentRepository "github.com/zakiafada32/retail/modules/payment"
 	productRepository "github.com/zakiafada32/retail/modules/product"
 	userRepository "github.com/zakiafada32/retail/modules/user"
@@ -67,6 +70,10 @@ func main() {
 	cartService := cartService.NewCartService(cartRepository)
 	cartController := cartController.NewCartController(cartService)
 
+	orderRepository := orderRepository.NewOrderRepository(db)
+	orderService := orderService.NewOrderService(orderRepository)
+	orderController := orderController.NewOrderController(orderService)
+
 	e := echo.New()
 
 	controller := api.Controller{
@@ -76,6 +83,7 @@ func main() {
 		Payment:  paymentController,
 		Courier:  courierController,
 		Cart:     cartController,
+		Order:    orderController,
 	}
 
 	api.Bootstrap(e, &controller)

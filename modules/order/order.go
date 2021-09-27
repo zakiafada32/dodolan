@@ -7,6 +7,7 @@ import (
 	"github.com/zakiafada32/retail/modules/courier"
 	"github.com/zakiafada32/retail/modules/payment"
 	"github.com/zakiafada32/retail/modules/user"
+	"gorm.io/gorm"
 )
 
 type Order struct {
@@ -33,4 +34,14 @@ type OrderItem struct {
 	TotalAmount uint64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+}
+
+type OrderRepository struct {
+	db *gorm.DB
+}
+
+func NewOrderRepository(db *gorm.DB) *OrderRepository {
+	return &OrderRepository{
+		db: db,
+	}
 }

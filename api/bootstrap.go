@@ -8,6 +8,7 @@ import (
 	"github.com/zakiafada32/retail/api/v1/cart"
 	"github.com/zakiafada32/retail/api/v1/category"
 	"github.com/zakiafada32/retail/api/v1/courier"
+	"github.com/zakiafada32/retail/api/v1/order"
 	"github.com/zakiafada32/retail/api/v1/payment"
 	"github.com/zakiafada32/retail/api/v1/product"
 	"github.com/zakiafada32/retail/api/v1/user"
@@ -20,6 +21,7 @@ type Controller struct {
 	Payment  *payment.PaymentController
 	Courier  *courier.CourierController
 	Cart     *cart.CartController
+	Order    *order.OrderController
 }
 
 func Bootstrap(e *echo.Echo, c *Controller) {
@@ -81,9 +83,8 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	cartV1.POST("/checkout", c.Cart.Checkout, middlewares.Authorized())
 
 	orderV1 := e.Group("api/v1/orders")
-	orderV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.GET("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.POST("", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.POST("/payments", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.POST("/couriers", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	orderV1.GET("", c.Order.FindAll, middlewares.Authorized())
+	orderV1.GET("/:id", c.Order.FindById, middlewares.Authorized())
+	orderV1.POST("/payments", c.Order.Payment, middlewares.Authorized())
+	orderV1.POST("/couriers", c.Order.Courier, middlewares.Authorized())
 }
