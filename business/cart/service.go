@@ -2,6 +2,7 @@ package cart
 
 import (
 	"errors"
+	"log"
 
 	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/utils"
@@ -20,11 +21,13 @@ func NewCartService(repo Repository) Service {
 func (s *service) Update(userId string, cartItem CartItem) error {
 	err := utils.GetValidator().Struct(cartItem)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 
 	err = s.repository.Update(userId, cartItem.ProductID, cartItem.Quantity)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 
@@ -34,6 +37,7 @@ func (s *service) Update(userId string, cartItem CartItem) error {
 func (s *service) FindAll(userId string) (Cart, error) {
 	cartItem, err := s.repository.FindAll(userId)
 	if err != nil {
+		log.Println(err)
 		return Cart{}, errors.New(business.InternalServerError)
 	}
 	cart := Cart{}
@@ -47,6 +51,7 @@ func (s *service) FindAll(userId string) (Cart, error) {
 func (s *service) DeleteCartItem(userId string, productsId []uint32) error {
 	err := s.repository.DeleteCartItem(userId, productsId)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 
@@ -56,6 +61,7 @@ func (s *service) DeleteCartItem(userId string, productsId []uint32) error {
 func (s *service) Checkout(userId string, paymentId uint32, courierId uint32) error {
 	cartItem, err := s.repository.FindAll(userId)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.InternalServerError)
 	}
 	if len(cartItem) == 0 {
@@ -71,11 +77,13 @@ func (s *service) Checkout(userId string, paymentId uint32, courierId uint32) er
 
 	err = s.repository.Checkout(userId, paymentId, courierId, cart)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 
 	err = s.repository.DeleteCartItem(userId, productsId)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 

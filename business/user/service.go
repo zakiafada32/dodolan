@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"log"
 
 	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/utils"
@@ -20,6 +21,7 @@ func NewUserService(repo Repository) Service {
 func (s *service) GetCurrent(id string) (User, error) {
 	user, err := s.repository.FindById(id)
 	if err != nil {
+		log.Println(err)
 		return User{}, errors.New(business.InternalServerError)
 	}
 
@@ -29,11 +31,13 @@ func (s *service) GetCurrent(id string) (User, error) {
 func (s *service) CreateNew(user User) error {
 	err := utils.GetValidator().Struct(user)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 	user.ID = utils.GenerateID()
 	hashingPassword, err := utils.Hashing(user.Password)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.InternalServerError)
 	}
 
@@ -44,16 +48,19 @@ func (s *service) CreateNew(user User) error {
 func (s *service) Login(email string, password string) (string, error) {
 	user, err := s.repository.FindByEmail(email)
 	if err != nil {
+		log.Println(err)
 		return "", errors.New(business.Unauthorized)
 	}
 
 	err = utils.CompareHash(user.Password, password)
 	if err != nil {
+		log.Println(err)
 		return "", errors.New(business.Unauthorized)
 	}
 
 	token, err := utils.GenerateToken(user.ID, user.IsAdmin)
 	if err != nil {
+		log.Println(err)
 		return "", errors.New(business.InternalServerError)
 	}
 	return token, nil
@@ -62,6 +69,7 @@ func (s *service) Login(email string, password string) (string, error) {
 func (s *service) Update(id, name, address string) (User, error) {
 	user, err := s.repository.Update(id, name, address)
 	if err != nil {
+		log.Println(err)
 		return User{}, errors.New(business.InternalServerError)
 	}
 

@@ -2,6 +2,7 @@ package category
 
 import (
 	"errors"
+	"log"
 
 	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/utils"
@@ -20,10 +21,12 @@ func NewCategoryService(repo Repository) Service {
 func (s *service) CreateNew(category Category) error {
 	err := utils.GetValidator().Struct(category)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 	err = s.repository.CreateNew(category)
 	if err != nil {
+		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
 	return nil
@@ -32,6 +35,7 @@ func (s *service) CreateNew(category Category) error {
 func (s *service) FindAll() ([]Category, error) {
 	categories, err := s.repository.FindAll()
 	if err != nil {
+		log.Println(err)
 		return []Category{}, errors.New(business.InternalServerError)
 	}
 
@@ -41,6 +45,7 @@ func (s *service) FindAll() ([]Category, error) {
 func (s *service) FindById(id uint32) (Category, error) {
 	productByCategory, err := s.repository.FindById(id)
 	if err != nil {
+		log.Println(err)
 		return Category{}, errors.New(business.NotFound)
 	}
 
@@ -50,6 +55,7 @@ func (s *service) FindById(id uint32) (Category, error) {
 func (s *service) Update(id uint32, name string, description string) (Category, error) {
 	category, err := s.repository.Update(id, name, description)
 	if err != nil {
+		log.Println(err)
 		return Category{}, errors.New(business.BadRequest)
 	}
 

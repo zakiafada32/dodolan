@@ -20,6 +20,7 @@ func NewOrderService(repo Repository) Service {
 func (s *service) FindById(orderId uint32) (Order, error) {
 	order, err := s.repository.FindById(orderId)
 	if err != nil {
+		log.Println(err)
 		return Order{}, errors.New(business.NotFound)
 	}
 
@@ -29,6 +30,7 @@ func (s *service) FindById(orderId uint32) (Order, error) {
 func (s *service) FindAll() ([]Order, error) {
 	orders, err := s.repository.FindAll()
 	if err != nil {
+		log.Println(err)
 		return []Order{}, errors.New(business.NotFound)
 	}
 
