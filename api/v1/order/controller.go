@@ -20,7 +20,13 @@ func NewOrderController(service order.Service) *OrderController {
 }
 
 func (cont *OrderController) FindAll(c echo.Context) error {
-	return nil
+	orders, err := cont.service.FindAll()
+	if err != nil {
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
+	}
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{
+		"orders": orders,
+	}))
 }
 
 func (cont *OrderController) FindById(c echo.Context) error {

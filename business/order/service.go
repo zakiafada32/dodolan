@@ -24,3 +24,12 @@ func (s *service) FindById(orderId uint32) (Order, error) {
 
 	return order, nil
 }
+
+func (s *service) FindAll() ([]Order, error) {
+	orders, err := s.repository.FindAll()
+	if err != nil {
+		return []Order{}, errors.New(business.NotFound)
+	}
+
+	return orders, nil
+}

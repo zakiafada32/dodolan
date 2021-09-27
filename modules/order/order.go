@@ -71,6 +71,34 @@ func (repo *OrderRepository) FindById(orderId uint32) (orderBusiness.Order, erro
 	return orderData, nil
 }
 
+func (repo *OrderRepository) FindAll() ([]orderBusiness.Order, error) {
+	var orders []Order
+	err := repo.db.Preload(clause.Associations).Find(&orders).Error
+	if err != nil {
+		return []orderBusiness.Order{}, err
+	}
+
+	ordersData := make([]orderBusiness.Order, len(orders))
+
+	for i, order := range orders {
+		var items []OrderItem
+		err = repo.db.Preload(clause.Associations).Where("order_id = ?", order.ID).Find(&items).Error
+		if err != nil {
+			return []orderBusiness.Order{}, err
+		}
+
+		itemsData := make([]orderBusiness.OrderItem, len(items))
+		for i, item := range items {
+			itemsData[i] = converToOrderItemBusiness(item)
+		}
+
+		ordersData[i] = convertToOrderBusiness(order)
+		ordersData[i].Items = itemsData
+	}
+
+	return ordersData, nil
+}
+
 func convertToOrderBusiness(order Order) orderBusiness.Order {
 	return orderBusiness.Order{
 		ID:                order.ID,
