@@ -62,7 +62,7 @@ func (cont *ProductController) CreateNew(c echo.Context) error {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(common.ConstructResponse(business.SucessCreated, echo.Map{}))
+	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))
 }
 
 func (cont *ProductController) Update(c echo.Context) error {

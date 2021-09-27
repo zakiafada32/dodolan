@@ -75,14 +75,15 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	courierV1.PUT("/:id", c.Courier.Update, middlewares.Authorized(), middlewares.IsAdmin)
 
 	cartV1 := e.Group("api/v1/cart")
-	cartV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	cartV1.GET("", c.Cart.FindAll, middlewares.Authorized())
 	cartV1.POST("", c.Cart.AddCartItem, middlewares.Authorized())
+	cartV1.POST("/delete", c.Cart.DeleteCartItem, middlewares.Authorized())
 	cartV1.POST("/checkout", func(c echo.Context) error { return nil }, middlewares.Authorized())
 
 	orderV1 := e.Group("api/v1/orders")
 	orderV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())
 	orderV1.GET("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized())
 	orderV1.POST("", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.POST("/payment", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	orderV1.POST("/courier", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	orderV1.POST("/payments", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	orderV1.POST("/couriers", func(c echo.Context) error { return nil }, middlewares.Authorized())
 }

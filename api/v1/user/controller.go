@@ -34,7 +34,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(common.ConstructResponse(business.SucessCreated, echo.Map{}))
+	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))
 }
 
 func (uc *UserController) GetCurrentUser(c echo.Context) error {

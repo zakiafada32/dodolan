@@ -44,7 +44,7 @@ func (cont *PaymentController) CreateNew(c echo.Context) error {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	return c.JSON(common.ConstructResponse(business.SucessCreated, echo.Map{}))
+	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))
 }
 
 func (cont *PaymentController) Update(c echo.Context) error {

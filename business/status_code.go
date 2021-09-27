@@ -2,8 +2,8 @@ package business
 
 // success status code
 var (
-	Success       = "success"
-	SucessCreated = "sucess_created"
+	Success        = "success"
+	SuccessCreated = "sucess_created"
 )
 
 // err status code

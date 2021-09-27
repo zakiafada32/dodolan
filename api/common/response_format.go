@@ -23,9 +23,9 @@ func ConstructResponse(status string, data map[string]interface{}) (int, Respons
 		response.StatusCode = business.Success
 		response.Message = "success"
 		response.Data = data
-	case business.SucessCreated:
+	case business.SuccessCreated:
 		httpStatus = http.StatusCreated
-		response.StatusCode = business.SucessCreated
+		response.StatusCode = business.SuccessCreated
 		response.Message = "success created"
 		response.Data = data
 	// error response
