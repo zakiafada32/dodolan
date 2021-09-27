@@ -166,18 +166,6 @@ func convertToProductModel(product business.Product) module.Product {
 	}
 }
 
-func convertToProductBusiness(product module.Product) business.Product {
-	return business.Product{
-		ID:          product.ID,
-		Name:        product.Name,
-		Description: product.Description,
-		Stock:       product.Stock,
-		Price:       product.Price,
-		CreatedAt:   product.CreatedAt,
-		UpdatedAt:   product.UpdatedAt,
-	}
-}
-
 func convertToProductAttBusiness(product module.Product) business.ProductAtt {
 	return business.ProductAtt{
 		ID:          product.ID,

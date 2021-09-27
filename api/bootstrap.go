@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/zakiafada32/retail/api/middlewares"
 	"github.com/zakiafada32/retail/api/utils"
+	"github.com/zakiafada32/retail/api/v1/cart"
 	"github.com/zakiafada32/retail/api/v1/category"
 	"github.com/zakiafada32/retail/api/v1/courier"
 	"github.com/zakiafada32/retail/api/v1/payment"
@@ -18,6 +19,7 @@ type Controller struct {
 	Product  *product.ProductController
 	Payment  *payment.PaymentController
 	Courier  *courier.CourierController
+	Cart     *cart.CartController
 }
 
 func Bootstrap(e *echo.Echo, c *Controller) {
@@ -74,10 +76,10 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 
 	cartV1 := e.Group("api/v1/cart")
 	cartV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())
-	cartV1.POST("", func(c echo.Context) error { return nil }, middlewares.Authorized())
+	cartV1.POST("", c.Cart.AddCartItem, middlewares.Authorized())
 	cartV1.POST("/checkout", func(c echo.Context) error { return nil }, middlewares.Authorized())
 
-	orderV1 := e.Group("api/v1/order")
+	orderV1 := e.Group("api/v1/orders")
 	orderV1.GET("", func(c echo.Context) error { return nil }, middlewares.Authorized())
 	orderV1.GET("/:id", func(c echo.Context) error { return nil }, middlewares.Authorized())
 	orderV1.POST("", func(c echo.Context) error { return nil }, middlewares.Authorized())

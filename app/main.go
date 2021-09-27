@@ -12,18 +12,21 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/zakiafada32/retail/api"
+	cartController "github.com/zakiafada32/retail/api/v1/cart"
 	categoryController "github.com/zakiafada32/retail/api/v1/category"
 	courierController "github.com/zakiafada32/retail/api/v1/courier"
 	paymentController "github.com/zakiafada32/retail/api/v1/payment"
 	productController "github.com/zakiafada32/retail/api/v1/product"
 	userController "github.com/zakiafada32/retail/api/v1/user"
 	"github.com/zakiafada32/retail/app/config"
+	cartService "github.com/zakiafada32/retail/business/cart"
 	categoryService "github.com/zakiafada32/retail/business/category"
 	courierService "github.com/zakiafada32/retail/business/courier"
 	paymentService "github.com/zakiafada32/retail/business/payment"
 	productService "github.com/zakiafada32/retail/business/product"
 	userService "github.com/zakiafada32/retail/business/user"
 	"github.com/zakiafada32/retail/modules"
+	cartRepository "github.com/zakiafada32/retail/modules/cart"
 	categoryRepository "github.com/zakiafada32/retail/modules/category"
 	courierRepository "github.com/zakiafada32/retail/modules/courier"
 	paymentRepository "github.com/zakiafada32/retail/modules/payment"
@@ -60,6 +63,10 @@ func main() {
 	paymentService := paymentService.NewPaymentService(paymentRepository)
 	paymentController := paymentController.NewPaymentController(paymentService)
 
+	cartRepository := cartRepository.NewCartRepository(db)
+	cartService := cartService.NewCartService(cartRepository)
+	cartController := cartController.NewCartController(cartService)
+
 	e := echo.New()
 
 	controller := api.Controller{
@@ -68,6 +75,7 @@ func main() {
 		Product:  productController,
 		Payment:  paymentController,
 		Courier:  courierController,
+		Cart:     cartController,
 	}
 
 	api.Bootstrap(e, &controller)

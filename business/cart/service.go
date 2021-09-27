@@ -1,5 +1,12 @@
 package cart
 
+import (
+	"errors"
+
+	"github.com/zakiafada32/retail/business"
+	"github.com/zakiafada32/retail/business/utils"
+)
+
 type service struct {
 	repository Repository
 }
@@ -10,6 +17,16 @@ func NewCartService(repo Repository) Service {
 	}
 }
 
-func (s *service) AddCartItem(userId string, productId uint32, quantity uint32) error {
+func (s *service) UpdateCartItem(userId string, cartItem CartItem) error {
+	err := utils.GetValidator().Struct(cartItem)
+	if err != nil {
+		return errors.New(business.BadRequest)
+	}
+
+	err = s.repository.UpdateCartItem(userId, cartItem.ProductID, cartItem.Quantity)
+	if err != nil {
+		return errors.New(business.BadRequest)
+	}
+
 	return nil
 }

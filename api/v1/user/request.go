@@ -5,7 +5,7 @@ import "github.com/zakiafada32/retail/business/user"
 type userRequestBody struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,gte=8"`
+	Password string `json:"password" validate:"required,gt=6"`
 	Address  string `json:"address" validate:"required"`
 	IsAdmin  bool   `json:"is_admin"`
 }
