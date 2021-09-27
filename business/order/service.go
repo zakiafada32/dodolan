@@ -2,6 +2,7 @@ package order
 
 import (
 	"errors"
+	"log"
 
 	"github.com/zakiafada32/retail/business"
 )
@@ -32,4 +33,14 @@ func (s *service) FindAll() ([]Order, error) {
 	}
 
 	return orders, nil
+}
+
+func (s *service) Payment(orderId uint32, totalAmount uint64) error {
+	err := s.repository.Payment(orderId, totalAmount)
+	if err != nil {
+		log.Println(err)
+		return errors.New(business.BadRequest)
+	}
+
+	return nil
 }

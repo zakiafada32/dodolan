@@ -45,7 +45,18 @@ func (cont *OrderController) FindById(c echo.Context) error {
 }
 
 func (cont *OrderController) Payment(c echo.Context) error {
-	return nil
+	var body paymentRequestBody
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
+	}
+	if err := c.Validate(&body); err != nil {
+		return err
+	}
+	if err := cont.service.Payment(body.OrderId, body.TotalAmount); err != nil {
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
+	}
+
+	return c.JSON(common.ConstructResponse(business.Success, echo.Map{}))
 }
 
 func (cont *OrderController) Courier(c echo.Context) error {

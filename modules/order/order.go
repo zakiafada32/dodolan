@@ -1,6 +1,7 @@
 package order
 
 import (
+	"errors"
 	"time"
 
 	orderBusiness "github.com/zakiafada32/retail/business/order"
@@ -97,6 +98,28 @@ func (repo *OrderRepository) FindAll() ([]orderBusiness.Order, error) {
 	}
 
 	return ordersData, nil
+}
+
+func (repo *OrderRepository) Payment(orderId uint32, totalAmount uint64) error {
+	var order Order
+	err := repo.db.Preload(clause.Associations).Where("id = ?", orderId).First(&order).Error
+	if err != nil {
+		return err
+	}
+	if *order.PaymentStatus {
+		return errors.New("the order already paid")
+	}
+	if order.TotalAmount != totalAmount {
+		return errors.New("the total amount not same")
+	}
+
+	paid := true
+	err = repo.db.Model(&order).Updates(Order{PaymentStatus: &paid}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func convertToOrderBusiness(order Order) orderBusiness.Order {
