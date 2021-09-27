@@ -46,3 +46,13 @@ func (s *service) Payment(orderId uint32, totalAmount uint64) error {
 
 	return nil
 }
+
+func (s *service) Courier(orderId uint32) error {
+	err := s.repository.Courier(orderId)
+	if err != nil {
+		log.Println(err)
+		return errors.New(business.BadRequest)
+	}
+
+	return nil
+}

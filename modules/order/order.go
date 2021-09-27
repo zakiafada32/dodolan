@@ -102,7 +102,7 @@ func (repo *OrderRepository) FindAll() ([]orderBusiness.Order, error) {
 
 func (repo *OrderRepository) Payment(orderId uint32, totalAmount uint64) error {
 	var order Order
-	err := repo.db.Preload(clause.Associations).Where("id = ?", orderId).First(&order).Error
+	err := repo.db.Where("id = ?", orderId).First(&order).Error
 	if err != nil {
 		return err
 	}
@@ -115,6 +115,25 @@ func (repo *OrderRepository) Payment(orderId uint32, totalAmount uint64) error {
 
 	paid := true
 	err = repo.db.Model(&order).Updates(Order{PaymentStatus: &paid}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *OrderRepository) Courier(orderId uint32) error {
+	var order Order
+	err := repo.db.Where("id = ?", orderId).First(&order).Error
+	if err != nil {
+		return err
+	}
+	if *order.CourierStatus {
+		return errors.New("the order already delivered")
+	}
+
+	delievered := true
+	err = repo.db.Model(&order).Updates(Order{CourierStatus: &delievered}).Error
 	if err != nil {
 		return err
 	}
