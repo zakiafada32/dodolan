@@ -71,7 +71,7 @@ func (s *service) Checkout(userId string, paymentId uint32, courierId uint32) er
 
 	err = s.repository.Checkout(userId, paymentId, courierId, cart)
 	if err != nil {
-		return errors.New(business.InternalServerError)
+		return errors.New(business.BadRequest)
 	}
 
 	err = s.repository.DeleteCartItem(userId, productsId)
