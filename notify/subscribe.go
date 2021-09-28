@@ -50,15 +50,6 @@ func Subscribe() {
 
 	auth := smtp.PlainAuth("", from, fromPassword, smtpHost)
 
-	var body bytes.Buffer
-	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	body.Write([]byte(fmt.Sprintf("Welcome to Warung Serba Ada \n%s\n\n", mimeHeaders)))
-	filepath := path.Join("template.txt")
-	t, err := template.ParseFiles(filepath)
-	if err != nil {
-		log.Println(err)
-	}
-
 	subjectUsers, i := "new-user-registered", 0
 	nc.Subscribe(subjectUsers, func(msg *nats.Msg) {
 		log.Printf("[#%d] Received on [%s]: '%s'", i, msg.Subject, string(msg.Data))
@@ -68,6 +59,15 @@ func Subscribe() {
 			log.Println(err)
 		}
 		log.Println(userData)
+
+		var body bytes.Buffer
+		mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
+		body.Write([]byte(fmt.Sprintf("Welcome to Warung Serba Ada \n%s\n\n", mimeHeaders)))
+		filepath := path.Join("template.txt")
+		t, err := template.ParseFiles(filepath)
+		if err != nil {
+			log.Println(err)
+		}
 
 		t.Execute(&body, struct {
 			Name    string
