@@ -1,0 +1,6 @@
+Thank You For Registration
+Welcome to Warung Serba Ada
+Below is your profile information
+Name: {{.Name}}
+Email: {{.Email}}
+Address: {{.Address}}
