@@ -42,7 +42,12 @@ func (s *service) CreateNew(user User) error {
 	}
 
 	user.Password = hashingPassword
-	return s.repository.CreateNew(user)
+	err = s.repository.CreateNew(user)
+	if err != nil {
+		log.Println(err)
+		return errors.New(business.BadRequest)
+	}
+	return nil
 }
 
 func (s *service) Login(email string, password string) (string, error) {

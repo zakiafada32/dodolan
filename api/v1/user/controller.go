@@ -31,7 +31,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 
 	err := uc.service.CreateNew(body.convertToUserBusiness())
 	if err != nil {
-		return err
+		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
 	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))

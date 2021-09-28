@@ -152,7 +152,7 @@ func updateProductStock(db *gorm.DB, id uint32, quantity uint32) error {
 
 	product.Stock -= quantity
 
-	err = db.Model(&product).Updates(&category.Product{Stock: product.Stock}).Error
+	err = db.Model(&product).Update("stock", product.Stock).Error
 	if err != nil {
 		return err
 	}
