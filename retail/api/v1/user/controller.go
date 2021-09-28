@@ -35,7 +35,7 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
-	pubsub.Publish(userData)
+	go pubsub.Publish(userData)
 
 	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))
 }
