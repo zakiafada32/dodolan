@@ -29,20 +29,22 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (repo *UserRepository) CreateNew(user userBusiness.User) error {
+func (repo *UserRepository) CreateNew(user userBusiness.User) (userBusiness.User, error) {
 	err := repo.db.Where("email = ?", user.Email).First(&User{}).Error
 	if err == nil {
-		return errors.New("email already exist")
+		return userBusiness.User{}, errors.New("email already exist")
 	}
 
 	userData := convertToUserModel(user)
 
 	err = repo.db.Create(&userData).Error
 	if err != nil {
-		return err
+		return userBusiness.User{}, err
 	}
 
-	return nil
+	userBusiness := convertToUserBusiness(userData)
+
+	return userBusiness, nil
 }
 
 func (repo *UserRepository) FindById(userId string) (userBusiness.User, error) {

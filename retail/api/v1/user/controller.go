@@ -4,6 +4,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/zakiafada32/retail/api/common"
+	"github.com/zakiafada32/retail/api/pubsub"
 	"github.com/zakiafada32/retail/api/utils"
 	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/user"
@@ -29,10 +30,12 @@ func (uc *UserController) CreateNewUser(c echo.Context) error {
 		return err
 	}
 
-	err := uc.service.CreateNew(body.convertToUserBusiness())
+	userData, err := uc.service.CreateNew(body.convertToUserBusiness())
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
+
+	pubsub.Publish(userData)
 
 	return c.JSON(common.ConstructResponse(business.SuccessCreated, echo.Map{}))
 }

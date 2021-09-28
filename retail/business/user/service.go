@@ -28,26 +28,26 @@ func (s *service) GetCurrent(id string) (User, error) {
 	return user, nil
 }
 
-func (s *service) CreateNew(user User) error {
+func (s *service) CreateNew(user User) (User, error) {
 	err := utils.GetValidator().Struct(user)
 	if err != nil {
 		log.Println(err)
-		return errors.New(business.BadRequest)
+		return User{}, errors.New(business.BadRequest)
 	}
 	user.ID = utils.GenerateID()
 	hashingPassword, err := utils.Hashing(user.Password)
 	if err != nil {
 		log.Println(err)
-		return errors.New(business.InternalServerError)
+		return User{}, errors.New(business.InternalServerError)
 	}
 
 	user.Password = hashingPassword
-	err = s.repository.CreateNew(user)
+	userData, err := s.repository.CreateNew(user)
 	if err != nil {
 		log.Println(err)
-		return errors.New(business.BadRequest)
+		return User{}, errors.New(business.BadRequest)
 	}
-	return nil
+	return userData, nil
 }
 
 func (s *service) Login(email string, password string) (string, error) {
