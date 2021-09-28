@@ -32,7 +32,8 @@ func main() {
 }
 
 func Subscribe() {
-	urls := nats.DefaultURL
+	// urls := nats.DefaultURL
+	urls := "nats-server://nats-server:4222"
 	options := []nats.Option{nats.Name("sales service")}
 	options = setupConnections(options)
 

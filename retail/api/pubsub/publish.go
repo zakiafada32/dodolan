@@ -9,7 +9,8 @@ import (
 )
 
 func Publish(data interface{}) {
-	urls := nats.DefaultURL
+	// urls := nats.DefaultURL
+	urls := "nats-server://nats-server:4222"
 	options := []nats.Option{nats.Name("users service")}
 	nc, err := nats.Connect(urls, options...)
 	if err != nil {
