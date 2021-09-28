@@ -3,8 +3,10 @@ package order
 import (
 	"strconv"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/zakiafada32/retail/api/common"
+	"github.com/zakiafada32/retail/api/utils"
 	"github.com/zakiafada32/retail/business"
 	"github.com/zakiafada32/retail/business/order"
 )
@@ -20,7 +22,11 @@ func NewOrderController(service order.Service) *OrderController {
 }
 
 func (cont *OrderController) FindAll(c echo.Context) error {
-	orders, err := cont.service.FindAll()
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*utils.JwtCustomClaimsUser)
+	userId := claims.ID
+
+	orders, err := cont.service.FindAll(userId)
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
@@ -35,7 +41,12 @@ func (cont *OrderController) FindById(c echo.Context) error {
 	if err != nil {
 		return c.JSON(common.ConstructResponse(business.BadRequest, echo.Map{}))
 	}
-	order, err := cont.service.FindById(uint32(orderId))
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*utils.JwtCustomClaimsUser)
+	userId := claims.ID
+
+	order, err := cont.service.FindById(userId, uint32(orderId))
 	if err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
@@ -52,7 +63,12 @@ func (cont *OrderController) Payment(c echo.Context) error {
 	if err := c.Validate(&body); err != nil {
 		return err
 	}
-	if err := cont.service.Payment(body.OrderId, body.TotalAmount); err != nil {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*utils.JwtCustomClaimsUser)
+	userId := claims.ID
+
+	if err := cont.service.Payment(userId, body.OrderId, body.TotalAmount); err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 
@@ -67,7 +83,12 @@ func (cont *OrderController) Courier(c echo.Context) error {
 	if err := c.Validate(&body); err != nil {
 		return err
 	}
-	if err := cont.service.Courier(body.OrderId); err != nil {
+
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*utils.JwtCustomClaimsUser)
+	userId := claims.ID
+
+	if err := cont.service.Courier(userId, body.OrderId); err != nil {
 		return c.JSON(common.ConstructResponse(err.Error(), echo.Map{}))
 	}
 

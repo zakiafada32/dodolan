@@ -49,9 +49,9 @@ func NewOrderRepository(db *gorm.DB) *OrderRepository {
 	}
 }
 
-func (repo *OrderRepository) FindById(orderId uint32) (orderBusiness.Order, error) {
+func (repo *OrderRepository) FindById(userId string, orderId uint32) (orderBusiness.Order, error) {
 	var order Order
-	err := repo.db.Preload(clause.Associations).Where("id = ?", orderId).First(&order).Error
+	err := repo.db.Preload(clause.Associations).Where("id = ? AND user_id = ?", orderId, userId).First(&order).Error
 	if err != nil {
 		return orderBusiness.Order{}, err
 	}
@@ -72,9 +72,9 @@ func (repo *OrderRepository) FindById(orderId uint32) (orderBusiness.Order, erro
 	return orderData, nil
 }
 
-func (repo *OrderRepository) FindAll() ([]orderBusiness.Order, error) {
+func (repo *OrderRepository) FindAll(userId string) ([]orderBusiness.Order, error) {
 	var orders []Order
-	err := repo.db.Preload(clause.Associations).Find(&orders).Error
+	err := repo.db.Preload(clause.Associations).Where("user_id = ?", userId).Find(&orders).Error
 	if err != nil {
 		return []orderBusiness.Order{}, err
 	}
@@ -100,9 +100,9 @@ func (repo *OrderRepository) FindAll() ([]orderBusiness.Order, error) {
 	return ordersData, nil
 }
 
-func (repo *OrderRepository) Payment(orderId uint32, totalAmount uint64) error {
+func (repo *OrderRepository) Payment(userId string, orderId uint32, totalAmount uint64) error {
 	var order Order
-	err := repo.db.Where("id = ?", orderId).First(&order).Error
+	err := repo.db.Where("id = ? AND user_id = ?", orderId, userId).First(&order).Error
 	if err != nil {
 		return err
 	}
@@ -122,9 +122,9 @@ func (repo *OrderRepository) Payment(orderId uint32, totalAmount uint64) error {
 	return nil
 }
 
-func (repo *OrderRepository) Courier(orderId uint32) error {
+func (repo *OrderRepository) Courier(userId string, orderId uint32) error {
 	var order Order
-	err := repo.db.Where("id = ?", orderId).First(&order).Error
+	err := repo.db.Where("id = ? AND user_id = ?", orderId, userId).First(&order).Error
 	if err != nil {
 		return err
 	}

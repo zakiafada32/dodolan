@@ -17,8 +17,8 @@ func NewOrderService(repo Repository) Service {
 	}
 }
 
-func (s *service) FindById(orderId uint32) (Order, error) {
-	order, err := s.repository.FindById(orderId)
+func (s *service) FindById(userId string, orderId uint32) (Order, error) {
+	order, err := s.repository.FindById(userId, orderId)
 	if err != nil {
 		log.Println(err)
 		return Order{}, errors.New(business.NotFound)
@@ -27,8 +27,8 @@ func (s *service) FindById(orderId uint32) (Order, error) {
 	return order, nil
 }
 
-func (s *service) FindAll() ([]Order, error) {
-	orders, err := s.repository.FindAll()
+func (s *service) FindAll(userId string) ([]Order, error) {
+	orders, err := s.repository.FindAll(userId)
 	if err != nil {
 		log.Println(err)
 		return []Order{}, errors.New(business.NotFound)
@@ -37,8 +37,8 @@ func (s *service) FindAll() ([]Order, error) {
 	return orders, nil
 }
 
-func (s *service) Payment(orderId uint32, totalAmount uint64) error {
-	err := s.repository.Payment(orderId, totalAmount)
+func (s *service) Payment(userId string, orderId uint32, totalAmount uint64) error {
+	err := s.repository.Payment(userId, orderId, totalAmount)
 	if err != nil {
 		log.Println(err)
 		return errors.New(business.BadRequest)
@@ -47,8 +47,8 @@ func (s *service) Payment(orderId uint32, totalAmount uint64) error {
 	return nil
 }
 
-func (s *service) Courier(orderId uint32) error {
-	err := s.repository.Courier(orderId)
+func (s *service) Courier(userId string, orderId uint32) error {
+	err := s.repository.Courier(userId, orderId)
 	if err != nil {
 		log.Println(err)
 		return errors.New(business.BadRequest)
