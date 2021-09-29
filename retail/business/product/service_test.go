@@ -38,7 +38,6 @@ func TestFindById(t *testing.T) {
 		productRepository.On("FindById", id).Return(productDataRepo, nil).Once()
 		product, err := productService.FindById(id)
 		assert.Nil(t, err)
-		assert.NotNil(t, product)
 		assert.Equal(t, id, product.ID)
 	})
 
@@ -55,7 +54,6 @@ func TestFindAll(t *testing.T) {
 		productRepository.On("FindAll").Return(productsRepo, nil).Once()
 		products, err := productService.FindAll()
 		assert.Nil(t, err)
-		assert.NotNil(t, productData)
 		assert.IsType(t, []product.ProductAtt{}, products)
 	})
 
@@ -105,7 +103,6 @@ func TestFindByCategory(t *testing.T) {
 		productRepository.On("FindByCategory", categoryId).Return(productsRepo, nil).Once()
 		products, err := productService.FindByCategory(categoryId)
 		assert.Nil(t, err)
-		assert.NotNil(t, productData)
 		assert.IsType(t, []product.ProductAtt{}, products)
 	})
 

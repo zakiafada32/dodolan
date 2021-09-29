@@ -36,10 +36,9 @@ func TestMain(m *testing.M) {
 
 func TestGetCurrent(t *testing.T) {
 	t.Run("Expect found the user with the same id and return the user data", func(t *testing.T) {
-		userRepository.On("FindById", mock.AnythingOfType("string")).Return(userData, nil).Once()
+		userRepository.On("FindById", id).Return(userData, nil).Once()
 		user, err := userService.GetCurrent(id)
 		assert.Nil(t, err)
-		assert.NotNil(t, user)
 		assert.Equal(t, id, user.ID)
 		assert.Equal(t, email, user.Email)
 		assert.Equal(t, address, user.Address)
@@ -47,7 +46,7 @@ func TestGetCurrent(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when the user not found", func(t *testing.T) {
-		userRepository.On("FindById", mock.AnythingOfType("string")).Return(user.User{}, errors.New(business.InternalServerError)).Once()
+		userRepository.On("FindById", id).Return(user.User{}, errors.New(business.InternalServerError)).Once()
 		_, err := userService.GetCurrent(id)
 		assert.NotNil(t, err)
 		assert.Equal(t, err, errors.New(business.InternalServerError))
@@ -64,7 +63,7 @@ func TestCreateNew(t *testing.T) {
 		assert.Equal(t, user.Address, userData.Address)
 	})
 
-	t.Run("Expect bad request when required user data is missing", func(t *testing.T) {
+	t.Run("Expect bad request when the email already exist", func(t *testing.T) {
 		userRepository.On("CreateNew", mock.AnythingOfType("user.User")).Return(user.User{}, errors.New(business.BadRequest)).Once()
 		_, err := userService.CreateNew(userData)
 		assert.NotNil(t, err)
@@ -80,7 +79,7 @@ func TestLogin(t *testing.T) {
 		assert.IsType(t, "string", token)
 	})
 
-	t.Run("Expect user login faied, email and password not match", func(t *testing.T) {
+	t.Run("Expect user login faied, when email not found", func(t *testing.T) {
 		userRepository.On("FindByEmail", email).Return(userDataRepo, errors.New(business.Unauthorized)).Once()
 		_, err := userService.Login(userData.Email, userData.Password)
 		assert.NotNil(t, err)
@@ -90,11 +89,10 @@ func TestLogin(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 
-	t.Run("Expect update the user data", func(t *testing.T) {
+	t.Run("Expect update the user data success", func(t *testing.T) {
 		userRepository.On("Update", id, name, address).Return(userDataRepo, nil).Once()
 		user, err := userService.Update(id, name, address)
 		assert.Nil(t, err)
-		assert.NotNil(t, user)
 		assert.Equal(t, name, user.Name)
 		assert.Equal(t, address, user.Address)
 	})
