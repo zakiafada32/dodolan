@@ -18,3 +18,5 @@ playground
 *.http
 *.toml
 tmp
+cover.html
+coverage.out

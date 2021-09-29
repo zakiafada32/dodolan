@@ -8,11 +8,12 @@ import (
 	"github.com/zakiafada32/retail/api/utils"
 )
 
-func Authorized() echo.MiddlewareFunc {
-
+func middlewareAuthorized() echo.MiddlewareFunc {
 	config := middleware.JWTConfig{
 		Claims:     &utils.JwtCustomClaimsUser{},
 		SigningKey: []byte(os.Getenv("JWT_KEY")),
 	}
 	return middleware.JWTWithConfig(config)
 }
+
+var Authorized echo.MiddlewareFunc = middlewareAuthorized()
