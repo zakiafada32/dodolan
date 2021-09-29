@@ -13,16 +13,6 @@
 ![erd diagram](https://raw.githubusercontent.com/zakiafada32/dodolan/main/diagram/erd.PNG)
 
 - [erd diagram](https://github.com/zakiafada32/dodolan/blob/main/diagram/erd.PNG)
-- ### Host
-
-  -
-
-- ### API documentation
-
-  -
-
-- ### Features
-  -
 
 ## Run locally
 
@@ -41,5 +31,3 @@
   ```
   $ docker-compose up --build
   ```
-
-  and visit http://localhost/
