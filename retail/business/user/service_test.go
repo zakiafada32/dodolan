@@ -14,12 +14,12 @@ import (
 )
 
 const (
-	id       = "id"
-	name     = "name"
-	email    = "name@email.com"
-	password = "password"
-	address  = "address"
-	isAdmin  = false
+	id       string = "id"
+	name     string = "name"
+	email    string = "name@email.com"
+	password string = "password"
+	address  string = "address"
+	isAdmin  bool   = false
 )
 
 var (
@@ -46,7 +46,7 @@ func TestGetCurrent(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when the user not found", func(t *testing.T) {
-		userRepository.On("FindById", id).Return(user.User{}, errors.New(business.InternalServerError)).Once()
+		userRepository.On("FindById", id).Return(user.User{}, errors.New("error")).Once()
 		_, err := userService.GetCurrent(id)
 		assert.NotNil(t, err)
 		assert.Equal(t, err, errors.New(business.InternalServerError))
@@ -64,7 +64,7 @@ func TestCreateNew(t *testing.T) {
 	})
 
 	t.Run("Expect bad request when the email already exist", func(t *testing.T) {
-		userRepository.On("CreateNew", mock.AnythingOfType("user.User")).Return(user.User{}, errors.New(business.BadRequest)).Once()
+		userRepository.On("CreateNew", mock.AnythingOfType("user.User")).Return(user.User{}, errors.New("error")).Once()
 		_, err := userService.CreateNew(userData)
 		assert.NotNil(t, err)
 		assert.Equal(t, err, errors.New(business.BadRequest))
@@ -80,7 +80,7 @@ func TestLogin(t *testing.T) {
 	})
 
 	t.Run("Expect user login faied, when email not found", func(t *testing.T) {
-		userRepository.On("FindByEmail", email).Return(userDataRepo, errors.New(business.Unauthorized)).Once()
+		userRepository.On("FindByEmail", email).Return(userDataRepo, errors.New("error")).Once()
 		_, err := userService.Login(userData.Email, userData.Password)
 		assert.NotNil(t, err)
 		assert.Equal(t, err, errors.New(business.Unauthorized))
@@ -98,7 +98,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when the user not found", func(t *testing.T) {
-		userRepository.On("Update", id, name, address).Return(user.User{}, errors.New(business.InternalServerError)).Once()
+		userRepository.On("Update", id, name, address).Return(user.User{}, errors.New("error")).Once()
 		_, err := userService.Update(id, name, address)
 		assert.NotNil(t, err)
 		assert.Equal(t, err, errors.New(business.InternalServerError))

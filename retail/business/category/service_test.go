@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	id          = uint32(1)
-	name        = "category"
-	description = "description"
+	id          uint32 = 1
+	name        string = "category"
+	description string = "description"
 )
 
 var (
@@ -38,7 +38,7 @@ func TestFindAll(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when cannot fetch category from database", func(t *testing.T) {
-		categoryRepository.On("FindAll").Return([]category.Category{}, errors.New(business.InternalServerError)).Once()
+		categoryRepository.On("FindAll").Return([]category.Category{}, errors.New("error")).Once()
 		_, err := categoryService.FindAll()
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.InternalServerError)
@@ -55,7 +55,7 @@ func TestFindById(t *testing.T) {
 	})
 
 	t.Run("Expect not found when cannot find category id", func(t *testing.T) {
-		categoryRepository.On("FindById", id).Return(category.Category{}, errors.New(business.NotFound)).Once()
+		categoryRepository.On("FindById", id).Return(category.Category{}, errors.New("error")).Once()
 		_, err := categoryService.FindById(id)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.NotFound)
@@ -70,7 +70,7 @@ func TestCreateNew(t *testing.T) {
 	})
 
 	t.Run("Expect bad request error when category name already exist", func(t *testing.T) {
-		categoryRepository.On("CreateNew", categoryData).Return(errors.New(business.BadRequest)).Once()
+		categoryRepository.On("CreateNew", categoryData).Return(errors.New("error")).Once()
 		err := categoryService.CreateNew(categoryData)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -87,7 +87,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Expect not found when cannot find category id", func(t *testing.T) {
-		categoryRepository.On("Update", id, name, description).Return(category.Category{}, errors.New(business.BadRequest)).Once()
+		categoryRepository.On("Update", id, name, description).Return(category.Category{}, errors.New("error")).Once()
 		_, err := categoryService.Update(id, name, description)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)

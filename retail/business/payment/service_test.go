@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	id          = uint32(1)
-	name        = "payment"
-	description = "description"
+	id          uint32 = 1
+	name        string = "payment"
+	description string = "description"
 )
 
 var (
@@ -38,7 +38,7 @@ func TestFindAll(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when cannot fetch payment provider from database", func(t *testing.T) {
-		paymentRepository.On("FindAll").Return([]payment.PaymentProvider{}, errors.New(business.InternalServerError)).Once()
+		paymentRepository.On("FindAll").Return([]payment.PaymentProvider{}, errors.New("error")).Once()
 		_, err := paymentService.FindAll()
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.InternalServerError)
@@ -53,7 +53,7 @@ func TestCreateNew(t *testing.T) {
 	})
 
 	t.Run("Expect bad request error when payment name already exist", func(t *testing.T) {
-		paymentRepository.On("CreateNew", paymentData).Return(errors.New(business.BadRequest)).Once()
+		paymentRepository.On("CreateNew", paymentData).Return(errors.New("error")).Once()
 		err := paymentService.CreateNew(paymentData)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -70,7 +70,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Expect not found when cannot find payment provider id", func(t *testing.T) {
-		paymentRepository.On("Update", id, name, description).Return(payment.PaymentProvider{}, errors.New(business.BadRequest)).Once()
+		paymentRepository.On("Update", id, name, description).Return(payment.PaymentProvider{}, errors.New("error")).Once()
 		_, err := paymentService.Update(id, name, description)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)

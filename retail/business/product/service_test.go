@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	id          = uint32(1)
-	name        = "product"
-	description = "description"
-	price       = uint64(1000)
-	stock       = uint32(10)
+	id          uint32 = 1
+	name        string = "product"
+	description string = "description"
+	price       uint64 = 1000
+	stock       uint32 = 10
+	categoryId  uint32 = 1
 )
 
 var (
@@ -25,7 +26,6 @@ var (
 	productData       product.Product
 	productDataRepo   product.ProductAtt
 	productsRepo      []product.ProductAtt
-	categoryId        uint32
 )
 
 func TestMain(m *testing.M) {
@@ -42,7 +42,7 @@ func TestFindById(t *testing.T) {
 	})
 
 	t.Run("Expect err when the product id not found", func(t *testing.T) {
-		productRepository.On("FindById", id).Return(product.ProductAtt{}, errors.New(business.NotFound)).Once()
+		productRepository.On("FindById", id).Return(product.ProductAtt{}, errors.New("error")).Once()
 		_, err := productService.FindById(id)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.NotFound)
@@ -58,7 +58,7 @@ func TestFindAll(t *testing.T) {
 	})
 
 	t.Run("Expect internal server error when cannot fetch products from database", func(t *testing.T) {
-		productRepository.On("FindAll").Return([]product.ProductAtt{}, errors.New(business.BadRequest)).Once()
+		productRepository.On("FindAll").Return([]product.ProductAtt{}, errors.New("error")).Once()
 		_, err := productService.FindAll()
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -73,7 +73,7 @@ func TestCreateNew(t *testing.T) {
 	})
 
 	t.Run("Expect error when new product name already exist", func(t *testing.T) {
-		productRepository.On("CreateNew", productData).Return(errors.New(business.BadRequest)).Once()
+		productRepository.On("CreateNew", productData).Return(errors.New("error")).Once()
 		err := productService.CreateNew(productData)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -91,7 +91,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("Expect error when the product id not found or name already exist", func(t *testing.T) {
-		productRepository.On("Update", id, productData).Return(product.ProductAtt{}, errors.New(business.BadRequest)).Once()
+		productRepository.On("Update", id, productData).Return(product.ProductAtt{}, errors.New("error")).Once()
 		_, err := productService.Update(id, productData)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -107,7 +107,7 @@ func TestFindByCategory(t *testing.T) {
 	})
 
 	t.Run("Expect err when category id not found", func(t *testing.T) {
-		productRepository.On("FindByCategory", categoryId).Return([]product.ProductAtt{}, errors.New(business.BadRequest)).Once()
+		productRepository.On("FindByCategory", categoryId).Return([]product.ProductAtt{}, errors.New("error")).Once()
 		_, err := productService.FindByCategory(categoryId)
 		assert.NotNil(t, err)
 		assert.Equal(t, err.Error(), business.BadRequest)
@@ -148,8 +148,6 @@ func setup() {
 			Stock:       20,
 		},
 	}
-
-	categoryId = 1
 
 	productService = product.NewProductService(&productRepository)
 }

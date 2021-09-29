@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	id          = uint32(1)
-	name        = "courier"
-	description = "description"
+	id          uint32 = 1
+	name        string = "courier"
+	description string = "description"
 )
 
 var (
