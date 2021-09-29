@@ -52,7 +52,7 @@ func TestCreateNew(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Expect bad request error when product name already exist", func(t *testing.T) {
+	t.Run("Expect bad request error when payment name already exist", func(t *testing.T) {
 		paymentRepository.On("CreateNew", paymentData).Return(errors.New(business.BadRequest)).Once()
 		err := paymentService.CreateNew(paymentData)
 		assert.NotNil(t, err)

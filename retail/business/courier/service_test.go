@@ -52,7 +52,7 @@ func TestCreateNew(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Expect bad request error when product name already exist", func(t *testing.T) {
+	t.Run("Expect bad request error when courier name already exist", func(t *testing.T) {
 		courierRepository.On("CreateNew", courierData).Return(errors.New(business.BadRequest)).Once()
 		err := courierService.CreateNew(courierData)
 		assert.NotNil(t, err)
