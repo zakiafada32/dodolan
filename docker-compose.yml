@@ -19,6 +19,7 @@ services:
       - PG_DBNAME=${PG_DBNAME}
       - PG_HOST=${PG_HOST}
       - PG_PORT=${PG_PORT}
+      - JWT_KEY=${JWT_KEY}
     deploy:
       restart_policy:
         condition: on-failure
