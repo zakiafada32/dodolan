@@ -59,7 +59,7 @@ func Bootstrap(e *echo.Echo, c *Controller) {
 	userV1.GET("", c.User.GetCurrentUser, middlewares.Authorized)
 	userV1.POST("", c.User.CreateNewUser)
 	userV1.POST("/login", c.User.Login)
-	userV1.PUT("/", c.User.UpdateUser, middlewares.Authorized)
+	userV1.PUT("", c.User.UpdateUser, middlewares.Authorized)
 
 	categoryV1 := e.Group("api/v1/categories")
 	categoryV1.GET("", c.Category.FindAllCategory)

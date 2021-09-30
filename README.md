@@ -14,6 +14,9 @@
 
 - [erd diagram](https://github.com/zakiafada32/dodolan/blob/main/diagram/erd.PNG)
 
+- ### API Documentation
+  - [API Documentation](https://documenter.getpostman.com/view/7470055/UUy1gT1x)
+
 ## Run locally
 
 - ### Prerequisites
@@ -26,7 +29,7 @@
 
 - ### build and run the app
 
-  The easiest way to build and run the is to use docker-compose command
+  To build and run the app with docker-compose command
 
   ```
   $ docker-compose up --build
