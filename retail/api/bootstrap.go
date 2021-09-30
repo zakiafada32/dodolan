@@ -21,7 +21,7 @@ type Controller struct {
 	Payment  *payment.PaymentController
 	Courier  *courier.CourierController
 	Cart     *cart.CartController
-	Order    *order.OrderController
+	Order    *order.OrderCler
 }
 
 func Bootstrap(e *echo.Echo, c *Controller) {
