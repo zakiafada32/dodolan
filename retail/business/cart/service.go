@@ -30,8 +30,7 @@ func (s *service) Update(userId string, cartItem CartItem) error {
 		log.Println(err)
 		return errors.New(business.BadRequest)
 	}
-
-	return errors.New("error")
+	return nil
 }
 
 func (s *service) FindAll(userId string) (Cart, error) {
