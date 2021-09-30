@@ -19,9 +19,9 @@ jobs:
         go-version: 1.17
 
     - name: Build-retail-service
-      working-directory: ./retail/business
+      working-directory: ./retail/app
       run: go build -v ./...
 
-    - name: Test
+    - name: Test-retail-service-business
       working-directory: ./retail/business
       run: go test -v ./...
